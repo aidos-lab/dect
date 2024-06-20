@@ -67,7 +67,7 @@ def generate_structured_directions(
     Along these unit circles we sample evenly. A check is performed to ensure
     the number of directions provided is divisible by three.
     """
-    assert d == 3 or d == 2, "You should provide either 2 or 3 for the dimension."
+    assert d in (2, 3), "You should provide either 2 or 3 for the dimension."
 
     if d == 3:
         if num_thetas % 3 != 0:

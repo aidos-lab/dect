@@ -80,6 +80,11 @@ def compute_ecc(
         ECT and with lower values it will smooth the ECT.
     """
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
+
+    # Due to (I believe) a bug in segment_add_coo, we have to first transpose and
+    # then apply segment add. In the original code movedim was applied after
+    # and that yields an bug in the backwards pass. Will have to be reported to
+    # pytorch eventually.
     return segment_add_coo(ecc.movedim(0, 1), index)
 
 
