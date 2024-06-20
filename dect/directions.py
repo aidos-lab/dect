@@ -1,19 +1,50 @@
 """
-Helper function to generate a structured set of directions in 2 or 3 dimensions.
+Helper function to generate a structured set of directions in 2 and 3 dimensions.
 """
 
 import torch
 
 
 def generate_uniform_directions(num_thetas: int = 64, d: int = 3, device: str = "cpu"):
-    """Generate randomly sampled directions from a sphere in d dimensions"""
+    """
+    Generate randomly sampled directions from a sphere in d dimensions.
+
+    First a standard gaussian centered at 0 with standard deviation 1 is sampled
+    and then projected onto the unit sphere. This yields a uniformly sampled set
+    of points on the unit spere. Please note that the generated shapes with have
+    shape [d, num_thetas].
+
+    Parameters
+    ----------
+    num_thetas: int
+        The number of directions to generate.
+    d: int
+        The dimension of the unit sphere. Default is 3 (hence R^3)
+    device: str
+        The device to put the tensor on.
+    """
     v = torch.randn(size=(d, num_thetas), device=device)
     v /= v.pow(2).sum(axis=0).sqrt().unsqueeze(1)
     return v
 
 
 def generate_uniform_2d_directions(num_thetas: int = 64, device: str = "cpu"):
-    """Generate uniformly sampled directions on the unit sphere."""
+    """
+    Generate uniformly sampled directions on the unit circle in two dimensions.
+
+    Provides a structured set of directions in two dimensions. First the interval
+    [0,2*pi] is devided into a regular grid and the corresponding angles on the
+    unit circle calculated.
+
+    Parameters
+    ----------
+    num_thetas: int
+        The number of directions to generate.
+    d: int
+        The dimension of the unit sphere. Default is 3 (hence R^3)
+    device: str
+        The device to put the tensor on.
+    """
     v = torch.vstack(
         [
             torch.sin(torch.linspace(0, 2 * torch.pi, num_thetas, device=device)),
@@ -36,6 +67,7 @@ def generate_structured_directions(
     Along these unit circles we sample evenly. A check is performed to ensure
     the number of directions provided is divisible by three.
     """
+    assert d == 3 or d == 2, "You should provide either 2 or 3 for the dimension."
 
     if d == 3:
         if num_thetas % 3 != 0:
