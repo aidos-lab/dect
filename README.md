@@ -107,7 +107,7 @@ basic roadmap:
 2. **Clone the Repository**: Clone the forked repository to your local machine.
 
    ```sh
-   git clone https://github.com/your-username/presto.git
+   git clone https://github.com/your-username/dect.git
    ```
 
 3. **Create a Branch**: Create a new branch for your feature or bug fix.
