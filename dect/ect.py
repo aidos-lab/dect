@@ -85,7 +85,8 @@ def compute_ecc(
     # then apply segment add. In the original code movedim was applied after
     # and that yields an bug in the backwards pass. Will have to be reported to
     # pytorch eventually.
-    return segment_add_coo(ecc.movedim(0, 1), index)
+    ecc = ecc.movedim(0, 2).movedim(0, 1)
+    return segment_add_coo(ecc, index)
 
 
 def compute_ecc_derivative(
@@ -216,11 +217,17 @@ class EctLayer(nn.Module):
     def __init__(self, config: EctConfig, V=None):
         super().__init__()
         self.config = config
+        # Change the view version here for batched sets of directions.
         self.lin = (
             torch.linspace(-config.radius, config.radius, config.bump_steps)
-            .view(-1, 1, 1)
+            .view(-1, 1, 1, 1)
             .to(config.device)
         )
+
+        # If provided with one set of directions.
+        # For backwards compatibility.
+        if V.ndim == 2:
+            V.unsqueeze(0)
 
         self.v = V
 
@@ -236,6 +243,6 @@ class EctLayer(nn.Module):
     def forward(self, batch: Batch):
         """Forward method for the ECT Layer."""
         ect = self.compute_ect(batch, self.v, self.lin)
-        if self.config.normalized:
-            return ect / torch.amax(ect, dim=(1, 2)).unsqueeze(1).unsqueeze(1)
-        return ect
+        # if self.config.normalized:
+        #     return ect / torch.amax(ect, dim=(1, 2)).unsqueeze(1).unsqueeze(1)
+        return ect.squeeze()
