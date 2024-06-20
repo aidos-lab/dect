@@ -217,7 +217,6 @@ class EctLayer(nn.Module):
     def __init__(self, config: EctConfig, V=None):
         super().__init__()
         self.config = config
-        # Change the view version here for batched sets of directions.
         self.lin = (
             torch.linspace(-config.radius, config.radius, config.bump_steps)
             .view(-1, 1, 1, 1)

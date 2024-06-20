@@ -10,7 +10,7 @@ dependencies = [
     "torch",
     "torch_geometric"
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 authors = [
   {name = "Ernst Röell", email = "ernst.roeell@helmholtz-munich.de"},
   {name = "Bastian Rieck", email = "bastian.rieck@helmholtz-munich.de"},
@@ -19,7 +19,7 @@ maintainers = [
   {name = "Ernst Röell", email = "ernst.roeell@helmholtz-munich.de"},
 ]
 description = "A fast package to compute the Euler Characteristic Transform"
-readme = "README.rst"
+readme = "README.md"
 license = {file = "LICENSE.txt"}
 keywords = ["euler", "characteristic", "topology", "tda", "transform"]
 classifiers = [
