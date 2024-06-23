@@ -89,31 +89,6 @@ def compute_ecc(
     return segment_add_coo(ecc, index)
 
 
-def compute_ecc_derivative(
-    nh: torch.FloatTensor,
-    index: torch.LongTensor,
-    lin: torch.FloatTensor,
-    scale: float = 100,
-):
-    """
-    Computes the Euler Characteristic curve with the derivative of the sigmoid.
-    """
-    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh)) * (
-        1 - torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
-    )
-    return segment_add_coo(ecc.movedim(0, 1), index)
-
-
-def compute_ect_points_derivative(
-    data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
-):
-    """
-    Computes the ECT of a pointcloud with the derivative of the sigmoid.
-    """
-    nh = data.x @ v
-    return compute_ecc_derivative(nh, data.batch, lin)
-
-
 def compute_ect_points(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
     """Computes the Euler Characteristic Transform of a batch of point clouds.
 
@@ -236,8 +211,6 @@ class EctLayer(nn.Module):
             self.compute_ect = compute_ect_edges
         elif config.ect_type == "faces":
             self.compute_ect = compute_ect_faces
-        elif config.ect_type == "points_derivative":
-            self.compute_ect = compute_ect_points_derivative
 
     def forward(self, batch: Batch):
         """Forward method for the ECT Layer."""
