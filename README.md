@@ -40,11 +40,11 @@ of a vector given an index vector.
 - Then install our package in either one of two ways:
    - As a git submodule 
    ```{pyton}
-   pip install git+https://github.com/aidos-lab/dect.git
+   git submodule add https://github.com/aidos-lab/dect.git
    ```
    - Or as a pip installable package. 
    ```{python}
-   
+   pip install git+https://github.com/aidos-lab/dect.git
    ```
 
 ## Usage
