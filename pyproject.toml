@@ -2,14 +2,18 @@
 requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
+
+[tool.setuptools]
+packages = ["dect"]
+
 [project]
 name = "dect"
 version = "0.0.0"
 dependencies = [
-    "numpy",
     "torch",
-    "torch_geometric"
+    "torch-scatter"
 ]
+
 requires-python = ">=3.10"
 authors = [
   {name = "Ernst Röell", email = "ernst.roeell@helmholtz-munich.de"},

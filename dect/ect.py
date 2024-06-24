@@ -186,6 +186,11 @@ def compute_ect_faces(data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor)
     )
 
 
+def normalize(ect):
+    """Returns the normalized ect, scaled to lie in the interval 0,1"""
+    return ect / torch.amax(ect, dim=(2, 3)).unsqueeze(2).unsqueeze(2)
+
+
 class EctLayer(nn.Module):
     """Machine learning layer for computing the ECT."""
 
@@ -215,6 +220,6 @@ class EctLayer(nn.Module):
     def forward(self, batch: Batch):
         """Forward method for the ECT Layer."""
         ect = self.compute_ect(batch, self.v, self.lin)
-        # if self.config.normalized:
-        #     return ect / torch.amax(ect, dim=(1, 2)).unsqueeze(1).unsqueeze(1)
+        if self.config.normalized:
+            return normalize(ect)
         return ect.squeeze()

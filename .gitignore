@@ -162,5 +162,5 @@ cython_debug/
 #.idea/
 
 # Scratch files and notebooks
-test*
+scratch_*
 

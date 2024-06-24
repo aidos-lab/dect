@@ -1,14 +1,15 @@
 # DECT - Differentiable Euler Characteristic Transform
 [![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect-evaluation) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect-evaluation)
 
-This is the official implementation for the Differential Euler Characteristic 
-Transform.
+This is the official implementation for the Differential Euler Characteristic
+Transform. Our implementation is fully optimized for hardware acceleration,
+yielding a blazingly fast implementation for machine learning research with
+pytorch.  
 
 
 ![Animated-ECT](figures/ect_animation.gif)
 
-
-Please use the following citation for our work:
+If you find our work useful, please use the following citation for our work:
 
 ```bibtex
 @inproceedings{Roell24a,
@@ -26,10 +27,25 @@ Please use the following citation for our work:
 
 ## Installation
 
-```{python}
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-pip install torch-scatter -f https://data.pyg.org/whl/torch-2.1.0+${CUDA}.html
-```
+For the installation we require an up to date installation of pytorch either
+with or without CUDA support. The DECT implementation also relies on the
+`torch-scatter` package, highly optimized for grouped operations such summing 
+of a vector given an index vector. 
+
+- First install `torch` and `torch-scatter`.
+   ```{python}
+   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+   pip install torch-scatter -f https://data.pyg.org/whl/torch-2.1.0+${CUDA}.html
+   ```
+- Then install our package in either one of two ways:
+   - As a git submodule 
+   ```{pyton}
+   pip install git+https://github.com/aidos-lab/dect.git
+   ```
+   - Or as a pip installable package. 
+   ```{python}
+   
+   ```
 
 ## Usage
 
