@@ -61,7 +61,6 @@ from dect.ect import EctConfig, EctLayer
 from dect.directions import generate_uniform_2d_directions
 
 
-theta = torch.tensor(0.0)
 v = generate_uniform_2d_directions(num_thetas=64, device="cpu")
 
 layer = EctLayer(EctConfig(), V=v)
@@ -75,17 +74,6 @@ batch = Batch.from_data_list([data])
 
 ect = layer(batch)
 ```
-
-
-
-## Examples 
-
-The core of our method, the differentiable computation of the Euler Characteristic 
-transform, can be found in the `./models/layers/layers.py` folder.
-Since the code is somewhat terse, highly vectorised and optimized for batch 
-processing, we provide an example computation that illustrates the core 
-principle of our method. 
-
 
 ## License
 
