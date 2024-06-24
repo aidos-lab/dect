@@ -75,9 +75,9 @@ def compute_ecc(
         The shape of the resulting tensor after summation. It has to be of the
         shape [num_discretization_steps, batch_size, num_thetas]
     scale: torch.FloatTensor
-        A single number that scales the sigmoid function by multiplying the sigmoid
-        with the scale. With high (100>) values, the ect will resemble a discrete
-        ECT and with lower values it will smooth the ECT.
+        A single number that scales the sigmoid function by multiplying the
+        sigmoid with the scale. With high (100>) values, the ect will resemble a
+        discrete ECT and with lower values it will smooth the ECT.
     """
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
 
@@ -115,7 +115,8 @@ def compute_ect_edges(data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor)
     Parameters
     ----------
     batch : Batch
-        A batch of data containing the node coordinates, the edges and batch index.
+        A batch of data containing the node coordinates, the edges and batch
+        index.
     v: torch.FloatTensor
         The direction vector that contains the directions.
     lin: torch.FloatTensor
