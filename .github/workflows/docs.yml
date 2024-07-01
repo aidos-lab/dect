@@ -28,6 +28,7 @@ jobs:
         run: |
           pip install torch==2.2.0
           pip install torch-scatter -f https://data.pyg.org/whl/torch-2.2.0+cpu.html
+          pip install pdoc
           pip install -e .
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
