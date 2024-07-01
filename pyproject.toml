@@ -24,7 +24,7 @@ maintainers = [
 ]
 description = "A fast package to compute the Euler Characteristic Transform"
 readme = "README.md"
-license = {file = "LICENSE.txt"}
+license = {file = "LICENSE.md"}
 keywords = ["euler", "characteristic", "topology", "tda", "transform"]
 classifiers = [
   "Development Status :: 4 - Beta",
