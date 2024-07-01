@@ -49,8 +49,6 @@ of a vector given an index vector.
 
 ## Usage
 
-For example usage, we provide the `example.ipynb` file and the code therein reproduces the 
-ECT of the gif of this README. 
 The code is provided on an as-is basis; see [LICENSE.md](LICENSE.md) for more information.
 You are cordially invited to both contribute and 
 provide feedback. Do not hesitate to contact us!
