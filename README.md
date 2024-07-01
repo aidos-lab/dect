@@ -1,5 +1,5 @@
 # DECT - Differentiable Euler Characteristic Transform
-[![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect-evaluation) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect-evaluation)
+[![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect)
 
 This is the official implementation for the Differential Euler Characteristic
 Transform. Our implementation is fully optimized for hardware acceleration,
