@@ -9,7 +9,7 @@ from torch_scatter import segment_add_coo
 
 
 @dataclass(frozen=True)
-class EctConfig:
+class ECTConfig:
     """
     Configuration of the ECT Layer.
     """
@@ -81,15 +81,17 @@ def compute_ecc(
     """
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
 
-    # Due to (I believe) a bug in segment_add_coo, we have to first transpose and
-    # then apply segment add. In the original code movedim was applied after
+    # Due to (I believe) a bug in segment_add_coo, we have to first transpose
+    # and then apply segment add. In the original code movedim was applied after
     # and that yields an bug in the backwards pass. Will have to be reported to
     # pytorch eventually.
     ecc = ecc.movedim(0, 2).movedim(0, 1)
     return segment_add_coo(ecc, index)
 
 
-def compute_ect_points(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
+def compute_ect_points(
+    batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
+):
     """Computes the Euler Characteristic Transform of a batch of point clouds.
 
     Parameters
@@ -109,7 +111,9 @@ def compute_ect_points(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTenso
     return compute_ecc(nh, batch.batch, lin)
 
 
-def compute_ect_edges(data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
+def compute_ect_edges(
+    data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
+):
     """Computes the Euler Characteristic Transform of a batch of graphs.
 
     Parameters
@@ -145,7 +149,9 @@ def compute_ect_edges(data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor)
     )
 
 
-def compute_ect_faces(data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
+def compute_ect_faces(
+    data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
+):
     """Computes the Euler Characteristic Transform of a batch of meshes.
 
     Parameters
@@ -192,10 +198,10 @@ def normalize(ect):
     return ect / torch.amax(ect, dim=(2, 3)).unsqueeze(2).unsqueeze(2)
 
 
-class EctLayer(nn.Module):
+class ECTLayer(nn.Module):
     """Machine learning layer for computing the ECT."""
 
-    def __init__(self, config: EctConfig, V=None):
+    def __init__(self, config: ECTConfig, V=None):
         super().__init__()
         self.config = config
         self.lin = (

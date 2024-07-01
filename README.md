@@ -1,5 +1,5 @@
 # DECT - Differentiable Euler Characteristic Transform
-[![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect-evaluation) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect-evaluation)
+[![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect) [![Maintainability](https://api.codeclimate.com/v1/badges/82f86d7e2f0aae342055/maintainability)](https://codeclimate.com/github/aidos-lab/dect/maintainability)
 
 This is the official implementation for the **Differentiable Euler Characteristic
 Transform**, a geometrical-topological method for shape classification. Our
@@ -7,7 +7,7 @@ implementation is fully optimized for hardware acceleration,
 yielding a blazingly fast implementation for machine learning research with
 [`PyTorch`](https://pytorch.org/).
 
-![Animated-ECT](figures/ect_animation.gif)
+<img src="https://github.com/aidos-lab/dect/blob/main/figures/ect_animation.gif?raw=true" width="100%">
 
 If you find our work useful, please consider using the following citation:
 
@@ -33,25 +33,31 @@ with or without CUDA support. The DECT implementation also relies on the
 of a vector given an index vector. 
 
 - First install `torch` and `torch-scatter`.
-   ```{python}
-   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-   pip install torch-scatter -f https://data.pyg.org/whl/torch-2.1.0+${CUDA}.html
+
+   ```python
+   pip install torch==2.2.0 --index-url https://download.pytorch.org/whl/cu117
+   pip install torch-scatter -f https://data.pyg.org/whl/torch-2.2.0+${CUDA}.html
    ```
+
 - Then install our package in either one of two ways:
    - As a git submodule 
-   ```{pyton}
+
+   ```sh
    git submodule add https://github.com/aidos-lab/dect.git
    ```
+
    - Or as a pip installable package. 
-   ```{python}
+   
+   ```sh
    pip install git+https://github.com/aidos-lab/dect.git
    ```
 
 ## Usage
 
+For example usage, we provide the `notebooks/example.ipynb` file and the code therein reproduces the 
+ECT of the gif of this readme. 
 The code is provided on an as-is basis; see [LICENSE.md](LICENSE.md) for more information.
-You are cordially invited to both contribute and 
-provide feedback. Do not hesitate to contact us!
+You are cordially invited to both contribute and provide feedback. Do not hesitate to contact us!
 
 ```python
 import torch
@@ -73,6 +79,7 @@ batch = Batch.from_data_list([data])
 
 ect = layer(batch)
 ```
+
 
 ## License
 

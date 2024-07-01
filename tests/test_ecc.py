@@ -7,10 +7,11 @@ import torch
 from dect.ect import compute_ecc, normalize
 
 
-class TestEct:
+class TestECT:
     """
     1. When normalized, the ect needs to be normalized.
-    2. The dimensions need to correspond. e.g. the batches need not to be mixed up.
+    2. The dimensions need to correspond. e.g. the batches need not to
+        be mixed up.
     3. Test that when one of the inputs has a gradient the out has one too.
     """
 
