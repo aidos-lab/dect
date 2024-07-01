@@ -23,6 +23,7 @@ jobs:
         with:
           python-version: '3.10.11'
           cache: 'pip'
+      - name: Install dependencies
         run: |
           pip install torch==2.2.0
           pip install torch-scatter -f https://data.pyg.org/whl/torch-2.2.0+cpu.html
@@ -31,7 +32,7 @@ jobs:
       # ADJUST THIS: install all dependencies (including pdoc)
       - name: Install dect.
           pip install -e .
-          
+
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
       - name: Build Docs
