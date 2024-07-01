@@ -94,19 +94,3 @@ def generate_multiview_directions(num_thetas: int, bump_steps: int, d: int):
         v[idx, idx_pair[1], :] = w[1]
 
     return v
-
-
-def test_fn():
-    """Yields
-    ------
-    err_code : int
-        Non-zero value indicates error code, or zero on success.
-    err_msg : str or None
-        Human readable error message, or None on success.
-
-    Returns
-    -------
-    int
-        Description of anonymous integer return value.
-
-    """
