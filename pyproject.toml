@@ -10,8 +10,8 @@ packages = ["dect"]
 name = "dect"
 version = "0.0.0"
 dependencies = [
+    "torch-scatter",
     "torch",
-    "torch-scatter"
 ]
 
 requires-python = ">=3.10"
