@@ -7,7 +7,7 @@ yielding a blazingly fast implementation for machine learning research with
 pytorch.  
 
 
-![Animated-ECT](figures/ect_animation.gif)
+<img src="https://github.com/aidos-lab/dect/blob/main/figures/ect_animation.gif?raw=true" width="100%">
 
 If you find our work useful, please use the following citation for our work:
 
