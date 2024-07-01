@@ -1,15 +1,15 @@
 # DECT - Differentiable Euler Characteristic Transform
 [![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect-evaluation) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect-evaluation)
 
-This is the official implementation for the Differential Euler Characteristic
-Transform. Our implementation is fully optimized for hardware acceleration,
+This is the official implementation for the **Differentiable Euler Characteristic
+Transform**, a geometrical-topological method for shape classification. Our
+implementation is fully optimized for hardware acceleration,
 yielding a blazingly fast implementation for machine learning research with
-pytorch.  
-
+[`PyTorch`](https://pytorch.org/).
 
 ![Animated-ECT](figures/ect_animation.gif)
 
-If you find our work useful, please use the following citation for our work:
+If you find our work useful, please consider using the following citation:
 
 ```bibtex
 @inproceedings{Roell24a,
@@ -27,7 +27,7 @@ If you find our work useful, please use the following citation for our work:
 
 ## Installation
 
-For the installation we require an up to date installation of pytorch either
+For the installation we require an up-to-date installation of PyTorch, either
 with or without CUDA support. The DECT implementation also relies on the
 `torch-scatter` package, highly optimized for grouped operations such summing 
 of a vector given an index vector. 
@@ -50,11 +50,12 @@ of a vector given an index vector.
 ## Usage
 
 For example usage, we provide the `example.ipynb` file and the code therein reproduces the 
-ECT of the gif of this readme. 
-The code is provided on an as is basis. You are cordially invited to both contribute and 
-provide feedback. Do not hesitate to contact us.
+ECT of the gif of this README. 
+The code is provided on an as-is basis; see [LICENSE.md](LICENSE.md) for more information.
+You are cordially invited to both contribute and 
+provide feedback. Do not hesitate to contact us!
 
-```{python}
+```python
 import torch
 from torch_geometric.data import Data, Batch
 from dect.ect import EctConfig, EctLayer
@@ -80,7 +81,7 @@ ect = layer(batch)
 Our code is released under a BSD-3-Clause license. This license essentially
 permits you to freely use our code as desired, integrate it into your projects,
 and much more --- provided you acknowledge the original authors. Please refer to
-[LICENSE.md](./LICENSE.md) for more information. 
+[LICENSE.md](LICENSE.md) for more information. 
 
 ## Contributing
 
