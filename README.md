@@ -1,5 +1,5 @@
 # DECT - Differentiable Euler Characteristic Transform
-[![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect)
+[![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect) [![Maintainability](https://api.codeclimate.com/v1/badges/82f86d7e2f0aae342055/maintainability)](https://codeclimate.com/github/aidos-lab/dect/maintainability)
 
 This is the official implementation for the Differential Euler Characteristic
 Transform. Our implementation is fully optimized for hardware acceleration,
@@ -35,8 +35,8 @@ of a vector given an index vector.
 - First install `torch` and `torch-scatter`.
 
    ```python
-   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-   pip install torch-scatter -f https://data.pyg.org/whl/torch-2.1.0+${CUDA}.html
+   pip install torch==2.2.0 --index-url https://download.pytorch.org/whl/cu117
+   pip install torch-scatter -f https://data.pyg.org/whl/torch-2.2.0+${CUDA}.html
    ```
 
 - Then install our package in either one of two ways:
