@@ -30,7 +30,8 @@ jobs:
           pip install pdoc
 
       # ADJUST THIS: install all dependencies (including pdoc)
-      - name: Install dect.
+      - name: Install dect
+        run: |
           pip install -e .
 
       # ADJUST THIS: build your documentation into docs/.
