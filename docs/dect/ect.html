@@ -32,31 +32,31 @@
             <h2>API Documentation</h2>
                 <ul class="memberlist">
             <li>
-                    <a class="class" href="#EctConfig">EctConfig</a>
+                    <a class="class" href="#ECTConfig">ECTConfig</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#EctConfig.__init__">EctConfig</a>
+                                <a class="function" href="#ECTConfig.__init__">ECTConfig</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctConfig.num_thetas">num_thetas</a>
+                                <a class="variable" href="#ECTConfig.num_thetas">num_thetas</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctConfig.bump_steps">bump_steps</a>
+                                <a class="variable" href="#ECTConfig.bump_steps">bump_steps</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctConfig.radius">radius</a>
+                                <a class="variable" href="#ECTConfig.radius">radius</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctConfig.ect_type">ect_type</a>
+                                <a class="variable" href="#ECTConfig.ect_type">ect_type</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctConfig.device">device</a>
+                                <a class="variable" href="#ECTConfig.device">device</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctConfig.num_features">num_features</a>
+                                <a class="variable" href="#ECTConfig.num_features">num_features</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctConfig.normalized">normalized</a>
+                                <a class="variable" href="#ECTConfig.normalized">normalized</a>
                         </li>
                 </ul>
 
@@ -98,22 +98,22 @@
                     <a class="function" href="#normalize">normalize</a>
             </li>
             <li>
-                    <a class="class" href="#EctLayer">EctLayer</a>
+                    <a class="class" href="#ECTLayer">ECTLayer</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#EctLayer.__init__">EctLayer</a>
+                                <a class="function" href="#ECTLayer.__init__">ECTLayer</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctLayer.config">config</a>
+                                <a class="variable" href="#ECTLayer.config">config</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctLayer.lin">lin</a>
+                                <a class="variable" href="#ECTLayer.lin">lin</a>
                         </li>
                         <li>
-                                <a class="variable" href="#EctLayer.v">v</a>
+                                <a class="variable" href="#ECTLayer.v">v</a>
                         </li>
                         <li>
-                                <a class="function" href="#EctLayer.forward">forward</a>
+                                <a class="function" href="#ECTLayer.forward">forward</a>
                         </li>
                 </ul>
 
@@ -152,7 +152,7 @@
 </span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a>
 </span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a>
 </span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="k">class</span> <span class="nc">EctConfig</span><span class="p">:</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="k">class</span> <span class="nc">ECTConfig</span><span class="p">:</span>
 </span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="sd">    Configuration of the ECT Layer.</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -341,10 +341,10 @@
 </span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a>    <span class="k">return</span> <span class="n">ect</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">ect</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a>
 </span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a>
-</span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a><span class="k">class</span> <span class="nc">EctLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a><span class="k">class</span> <span class="nc">ECTLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 </span><span id="L-202"><a href="#L-202"><span class="linenos">202</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Machine learning layer for computing the ECT.&quot;&quot;&quot;</span>
 </span><span id="L-203"><a href="#L-203"><span class="linenos">203</span></a>
-</span><span id="L-204"><a href="#L-204"><span class="linenos">204</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">EctConfig</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="L-204"><a href="#L-204"><span class="linenos">204</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ECTConfig</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 </span><span id="L-205"><a href="#L-205"><span class="linenos">205</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 </span><span id="L-206"><a href="#L-206"><span class="linenos">206</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
 </span><span id="L-207"><a href="#L-207"><span class="linenos">207</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="p">(</span>
@@ -377,31 +377,31 @@
 
 
             </section>
-                <section id="EctConfig">
-                            <input id="EctConfig-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+                <section id="ECTConfig">
+                            <input id="ECTConfig-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr class">
                     <div class="decorator">@dataclass(frozen=True)</div>
 
     <span class="def">class</span>
-    <span class="name">EctConfig</span>:
+    <span class="name">ECTConfig</span>:
 
-                <label class="view-source-button" for="EctConfig-view-source"><span>View Source</span></label>
+                <label class="view-source-button" for="ECTConfig-view-source"><span>View Source</span></label>
 
     </div>
-    <a class="headerlink" href="#EctConfig"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="EctConfig-12"><a href="#EctConfig-12"><span class="linenos">12</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="EctConfig-13"><a href="#EctConfig-13"><span class="linenos">13</span></a><span class="k">class</span> <span class="nc">EctConfig</span><span class="p">:</span>
-</span><span id="EctConfig-14"><a href="#EctConfig-14"><span class="linenos">14</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="EctConfig-15"><a href="#EctConfig-15"><span class="linenos">15</span></a><span class="sd">    Configuration of the ECT Layer.</span>
-</span><span id="EctConfig-16"><a href="#EctConfig-16"><span class="linenos">16</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="EctConfig-17"><a href="#EctConfig-17"><span class="linenos">17</span></a>
-</span><span id="EctConfig-18"><a href="#EctConfig-18"><span class="linenos">18</span></a>    <span class="n">num_thetas</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>
-</span><span id="EctConfig-19"><a href="#EctConfig-19"><span class="linenos">19</span></a>    <span class="n">bump_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>
-</span><span id="EctConfig-20"><a href="#EctConfig-20"><span class="linenos">20</span></a>    <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.1</span>
-</span><span id="EctConfig-21"><a href="#EctConfig-21"><span class="linenos">21</span></a>    <span class="n">ect_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;points&quot;</span>
-</span><span id="EctConfig-22"><a href="#EctConfig-22"><span class="linenos">22</span></a>    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
-</span><span id="EctConfig-23"><a href="#EctConfig-23"><span class="linenos">23</span></a>    <span class="n">num_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
-</span><span id="EctConfig-24"><a href="#EctConfig-24"><span class="linenos">24</span></a>    <span class="n">normalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <a class="headerlink" href="#ECTConfig"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ECTConfig-12"><a href="#ECTConfig-12"><span class="linenos">12</span></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="ECTConfig-13"><a href="#ECTConfig-13"><span class="linenos">13</span></a><span class="k">class</span> <span class="nc">ECTConfig</span><span class="p">:</span>
+</span><span id="ECTConfig-14"><a href="#ECTConfig-14"><span class="linenos">14</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="ECTConfig-15"><a href="#ECTConfig-15"><span class="linenos">15</span></a><span class="sd">    Configuration of the ECT Layer.</span>
+</span><span id="ECTConfig-16"><a href="#ECTConfig-16"><span class="linenos">16</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="ECTConfig-17"><a href="#ECTConfig-17"><span class="linenos">17</span></a>
+</span><span id="ECTConfig-18"><a href="#ECTConfig-18"><span class="linenos">18</span></a>    <span class="n">num_thetas</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>
+</span><span id="ECTConfig-19"><a href="#ECTConfig-19"><span class="linenos">19</span></a>    <span class="n">bump_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>
+</span><span id="ECTConfig-20"><a href="#ECTConfig-20"><span class="linenos">20</span></a>    <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.1</span>
+</span><span id="ECTConfig-21"><a href="#ECTConfig-21"><span class="linenos">21</span></a>    <span class="n">ect_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;points&quot;</span>
+</span><span id="ECTConfig-22"><a href="#ECTConfig-22"><span class="linenos">22</span></a>    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+</span><span id="ECTConfig-23"><a href="#ECTConfig-23"><span class="linenos">23</span></a>    <span class="n">num_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span id="ECTConfig-24"><a href="#ECTConfig-24"><span class="linenos">24</span></a>    <span class="n">normalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 </span></pre></div>
 
 
@@ -409,98 +409,98 @@
 </div>
 
 
-                            <div id="EctConfig.__init__" class="classattr">
+                            <div id="ECTConfig.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">EctConfig</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">num_thetas</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>,</span><span class="param">	<span class="n">bump_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>,</span><span class="param">	<span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.1</span>,</span><span class="param">	<span class="n">ect_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;points&#39;</span>,</span><span class="param">	<span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span>,</span><span class="param">	<span class="n">num_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>,</span><span class="param">	<span class="n">normalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></span>)</span>
+        <span class="name">ECTConfig</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">num_thetas</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>,</span><span class="param">	<span class="n">bump_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span>,</span><span class="param">	<span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.1</span>,</span><span class="param">	<span class="n">ect_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;points&#39;</span>,</span><span class="param">	<span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cpu&#39;</span>,</span><span class="param">	<span class="n">num_features</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>,</span><span class="param">	<span class="n">normalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></span>)</span>
 
         
     </div>
-    <a class="headerlink" href="#EctConfig.__init__"></a>
+    <a class="headerlink" href="#ECTConfig.__init__"></a>
     
     
 
                             </div>
-                            <div id="EctConfig.num_thetas" class="classattr">
+                            <div id="ECTConfig.num_thetas" class="classattr">
                                 <div class="attr variable">
             <span class="name">num_thetas</span><span class="annotation">: int</span>        =
 <span class="default_value">32</span>
 
         
     </div>
-    <a class="headerlink" href="#EctConfig.num_thetas"></a>
+    <a class="headerlink" href="#ECTConfig.num_thetas"></a>
     
     
 
                             </div>
-                            <div id="EctConfig.bump_steps" class="classattr">
+                            <div id="ECTConfig.bump_steps" class="classattr">
                                 <div class="attr variable">
             <span class="name">bump_steps</span><span class="annotation">: int</span>        =
 <span class="default_value">32</span>
 
         
     </div>
-    <a class="headerlink" href="#EctConfig.bump_steps"></a>
+    <a class="headerlink" href="#ECTConfig.bump_steps"></a>
     
     
 
                             </div>
-                            <div id="EctConfig.radius" class="classattr">
+                            <div id="ECTConfig.radius" class="classattr">
                                 <div class="attr variable">
             <span class="name">radius</span><span class="annotation">: float</span>        =
 <span class="default_value">1.1</span>
 
         
     </div>
-    <a class="headerlink" href="#EctConfig.radius"></a>
+    <a class="headerlink" href="#ECTConfig.radius"></a>
     
     
 
                             </div>
-                            <div id="EctConfig.ect_type" class="classattr">
+                            <div id="ECTConfig.ect_type" class="classattr">
                                 <div class="attr variable">
             <span class="name">ect_type</span><span class="annotation">: str</span>        =
 <span class="default_value">&#39;points&#39;</span>
 
         
     </div>
-    <a class="headerlink" href="#EctConfig.ect_type"></a>
+    <a class="headerlink" href="#ECTConfig.ect_type"></a>
     
     
 
                             </div>
-                            <div id="EctConfig.device" class="classattr">
+                            <div id="ECTConfig.device" class="classattr">
                                 <div class="attr variable">
             <span class="name">device</span><span class="annotation">: str</span>        =
 <span class="default_value">&#39;cpu&#39;</span>
 
         
     </div>
-    <a class="headerlink" href="#EctConfig.device"></a>
+    <a class="headerlink" href="#ECTConfig.device"></a>
     
     
 
                             </div>
-                            <div id="EctConfig.num_features" class="classattr">
+                            <div id="ECTConfig.num_features" class="classattr">
                                 <div class="attr variable">
             <span class="name">num_features</span><span class="annotation">: int</span>        =
 <span class="default_value">3</span>
 
         
     </div>
-    <a class="headerlink" href="#EctConfig.num_features"></a>
+    <a class="headerlink" href="#ECTConfig.num_features"></a>
     
     
 
                             </div>
-                            <div id="EctConfig.normalized" class="classattr">
+                            <div id="ECTConfig.normalized" class="classattr">
                                 <div class="attr variable">
             <span class="name">normalized</span><span class="annotation">: bool</span>        =
 <span class="default_value">False</span>
 
         
     </div>
-    <a class="headerlink" href="#EctConfig.normalized"></a>
+    <a class="headerlink" href="#ECTConfig.normalized"></a>
     
     
 
@@ -929,49 +929,49 @@ shape [num_discretization_steps, batch_size, num_thetas]</li>
 
 
                 </section>
-                <section id="EctLayer">
-                            <input id="EctLayer-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+                <section id="ECTLayer">
+                            <input id="ECTLayer-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">EctLayer</span><wbr>(<span class="base">torch.nn.modules.module.Module</span>):
+    <span class="name">ECTLayer</span><wbr>(<span class="base">torch.nn.modules.module.Module</span>):
 
-                <label class="view-source-button" for="EctLayer-view-source"><span>View Source</span></label>
+                <label class="view-source-button" for="ECTLayer-view-source"><span>View Source</span></label>
 
     </div>
-    <a class="headerlink" href="#EctLayer"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="EctLayer-202"><a href="#EctLayer-202"><span class="linenos">202</span></a><span class="k">class</span> <span class="nc">EctLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-</span><span id="EctLayer-203"><a href="#EctLayer-203"><span class="linenos">203</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Machine learning layer for computing the ECT.&quot;&quot;&quot;</span>
-</span><span id="EctLayer-204"><a href="#EctLayer-204"><span class="linenos">204</span></a>
-</span><span id="EctLayer-205"><a href="#EctLayer-205"><span class="linenos">205</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">EctConfig</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="EctLayer-206"><a href="#EctLayer-206"><span class="linenos">206</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</span><span id="EctLayer-207"><a href="#EctLayer-207"><span class="linenos">207</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
-</span><span id="EctLayer-208"><a href="#EctLayer-208"><span class="linenos">208</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="EctLayer-209"><a href="#EctLayer-209"><span class="linenos">209</span></a>            <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">bump_steps</span><span class="p">)</span>
-</span><span id="EctLayer-210"><a href="#EctLayer-210"><span class="linenos">210</span></a>            <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span id="EctLayer-211"><a href="#EctLayer-211"><span class="linenos">211</span></a>            <span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-</span><span id="EctLayer-212"><a href="#EctLayer-212"><span class="linenos">212</span></a>        <span class="p">)</span>
-</span><span id="EctLayer-213"><a href="#EctLayer-213"><span class="linenos">213</span></a>
-</span><span id="EctLayer-214"><a href="#EctLayer-214"><span class="linenos">214</span></a>        <span class="c1"># If provided with one set of directions.</span>
-</span><span id="EctLayer-215"><a href="#EctLayer-215"><span class="linenos">215</span></a>        <span class="c1"># For backwards compatibility.</span>
-</span><span id="EctLayer-216"><a href="#EctLayer-216"><span class="linenos">216</span></a>        <span class="k">if</span> <span class="n">V</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-</span><span id="EctLayer-217"><a href="#EctLayer-217"><span class="linenos">217</span></a>            <span class="n">V</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="EctLayer-218"><a href="#EctLayer-218"><span class="linenos">218</span></a>
-</span><span id="EctLayer-219"><a href="#EctLayer-219"><span class="linenos">219</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">V</span>
-</span><span id="EctLayer-220"><a href="#EctLayer-220"><span class="linenos">220</span></a>
-</span><span id="EctLayer-221"><a href="#EctLayer-221"><span class="linenos">221</span></a>        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;points&quot;</span><span class="p">:</span>
-</span><span id="EctLayer-222"><a href="#EctLayer-222"><span class="linenos">222</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_points</span>
-</span><span id="EctLayer-223"><a href="#EctLayer-223"><span class="linenos">223</span></a>        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;edges&quot;</span><span class="p">:</span>
-</span><span id="EctLayer-224"><a href="#EctLayer-224"><span class="linenos">224</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_edges</span>
-</span><span id="EctLayer-225"><a href="#EctLayer-225"><span class="linenos">225</span></a>        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;faces&quot;</span><span class="p">:</span>
-</span><span id="EctLayer-226"><a href="#EctLayer-226"><span class="linenos">226</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_faces</span>
-</span><span id="EctLayer-227"><a href="#EctLayer-227"><span class="linenos">227</span></a>
-</span><span id="EctLayer-228"><a href="#EctLayer-228"><span class="linenos">228</span></a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Batch</span><span class="p">):</span>
-</span><span id="EctLayer-229"><a href="#EctLayer-229"><span class="linenos">229</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward method for the ECT Layer.&quot;&quot;&quot;</span>
-</span><span id="EctLayer-230"><a href="#EctLayer-230"><span class="linenos">230</span></a>        <span class="n">ect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="p">)</span>
-</span><span id="EctLayer-231"><a href="#EctLayer-231"><span class="linenos">231</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">normalized</span><span class="p">:</span>
-</span><span id="EctLayer-232"><a href="#EctLayer-232"><span class="linenos">232</span></a>            <span class="k">return</span> <span class="n">normalize</span><span class="p">(</span><span class="n">ect</span><span class="p">)</span>
-</span><span id="EctLayer-233"><a href="#EctLayer-233"><span class="linenos">233</span></a>        <span class="k">return</span> <span class="n">ect</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+    <a class="headerlink" href="#ECTLayer"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ECTLayer-202"><a href="#ECTLayer-202"><span class="linenos">202</span></a><span class="k">class</span> <span class="nc">ECTLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span><span id="ECTLayer-203"><a href="#ECTLayer-203"><span class="linenos">203</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Machine learning layer for computing the ECT.&quot;&quot;&quot;</span>
+</span><span id="ECTLayer-204"><a href="#ECTLayer-204"><span class="linenos">204</span></a>
+</span><span id="ECTLayer-205"><a href="#ECTLayer-205"><span class="linenos">205</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ECTConfig</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="ECTLayer-206"><a href="#ECTLayer-206"><span class="linenos">206</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span><span id="ECTLayer-207"><a href="#ECTLayer-207"><span class="linenos">207</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+</span><span id="ECTLayer-208"><a href="#ECTLayer-208"><span class="linenos">208</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="ECTLayer-209"><a href="#ECTLayer-209"><span class="linenos">209</span></a>            <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">bump_steps</span><span class="p">)</span>
+</span><span id="ECTLayer-210"><a href="#ECTLayer-210"><span class="linenos">210</span></a>            <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="ECTLayer-211"><a href="#ECTLayer-211"><span class="linenos">211</span></a>            <span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+</span><span id="ECTLayer-212"><a href="#ECTLayer-212"><span class="linenos">212</span></a>        <span class="p">)</span>
+</span><span id="ECTLayer-213"><a href="#ECTLayer-213"><span class="linenos">213</span></a>
+</span><span id="ECTLayer-214"><a href="#ECTLayer-214"><span class="linenos">214</span></a>        <span class="c1"># If provided with one set of directions.</span>
+</span><span id="ECTLayer-215"><a href="#ECTLayer-215"><span class="linenos">215</span></a>        <span class="c1"># For backwards compatibility.</span>
+</span><span id="ECTLayer-216"><a href="#ECTLayer-216"><span class="linenos">216</span></a>        <span class="k">if</span> <span class="n">V</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</span><span id="ECTLayer-217"><a href="#ECTLayer-217"><span class="linenos">217</span></a>            <span class="n">V</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="ECTLayer-218"><a href="#ECTLayer-218"><span class="linenos">218</span></a>
+</span><span id="ECTLayer-219"><a href="#ECTLayer-219"><span class="linenos">219</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">V</span>
+</span><span id="ECTLayer-220"><a href="#ECTLayer-220"><span class="linenos">220</span></a>
+</span><span id="ECTLayer-221"><a href="#ECTLayer-221"><span class="linenos">221</span></a>        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;points&quot;</span><span class="p">:</span>
+</span><span id="ECTLayer-222"><a href="#ECTLayer-222"><span class="linenos">222</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_points</span>
+</span><span id="ECTLayer-223"><a href="#ECTLayer-223"><span class="linenos">223</span></a>        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;edges&quot;</span><span class="p">:</span>
+</span><span id="ECTLayer-224"><a href="#ECTLayer-224"><span class="linenos">224</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_edges</span>
+</span><span id="ECTLayer-225"><a href="#ECTLayer-225"><span class="linenos">225</span></a>        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;faces&quot;</span><span class="p">:</span>
+</span><span id="ECTLayer-226"><a href="#ECTLayer-226"><span class="linenos">226</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_faces</span>
+</span><span id="ECTLayer-227"><a href="#ECTLayer-227"><span class="linenos">227</span></a>
+</span><span id="ECTLayer-228"><a href="#ECTLayer-228"><span class="linenos">228</span></a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Batch</span><span class="p">):</span>
+</span><span id="ECTLayer-229"><a href="#ECTLayer-229"><span class="linenos">229</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward method for the ECT Layer.&quot;&quot;&quot;</span>
+</span><span id="ECTLayer-230"><a href="#ECTLayer-230"><span class="linenos">230</span></a>        <span class="n">ect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="p">)</span>
+</span><span id="ECTLayer-231"><a href="#ECTLayer-231"><span class="linenos">231</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">normalized</span><span class="p">:</span>
+</span><span id="ECTLayer-232"><a href="#ECTLayer-232"><span class="linenos">232</span></a>            <span class="k">return</span> <span class="n">normalize</span><span class="p">(</span><span class="n">ect</span><span class="p">)</span>
+</span><span id="ECTLayer-233"><a href="#ECTLayer-233"><span class="linenos">233</span></a>        <span class="k">return</span> <span class="n">ect</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -979,38 +979,38 @@ shape [num_discretization_steps, batch_size, num_thetas]</li>
 </div>
 
 
-                            <div id="EctLayer.__init__" class="classattr">
-                                        <input id="EctLayer.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+                            <div id="ECTLayer.__init__" class="classattr">
+                                        <input id="ECTLayer.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
             
-        <span class="name">EctLayer</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">config</span><span class="p">:</span> <span class="n"><a href="#EctConfig">EctConfig</a></span>, </span><span class="param"><span class="n">V</span><span class="o">=</span><span class="kc">None</span></span>)</span>
+        <span class="name">ECTLayer</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">config</span><span class="p">:</span> <span class="n"><a href="#ECTConfig">ECTConfig</a></span>, </span><span class="param"><span class="n">V</span><span class="o">=</span><span class="kc">None</span></span>)</span>
 
-                <label class="view-source-button" for="EctLayer.__init__-view-source"><span>View Source</span></label>
+                <label class="view-source-button" for="ECTLayer.__init__-view-source"><span>View Source</span></label>
 
     </div>
-    <a class="headerlink" href="#EctLayer.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="EctLayer.__init__-205"><a href="#EctLayer.__init__-205"><span class="linenos">205</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">EctConfig</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="EctLayer.__init__-206"><a href="#EctLayer.__init__-206"><span class="linenos">206</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-</span><span id="EctLayer.__init__-207"><a href="#EctLayer.__init__-207"><span class="linenos">207</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
-</span><span id="EctLayer.__init__-208"><a href="#EctLayer.__init__-208"><span class="linenos">208</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="EctLayer.__init__-209"><a href="#EctLayer.__init__-209"><span class="linenos">209</span></a>            <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">bump_steps</span><span class="p">)</span>
-</span><span id="EctLayer.__init__-210"><a href="#EctLayer.__init__-210"><span class="linenos">210</span></a>            <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span id="EctLayer.__init__-211"><a href="#EctLayer.__init__-211"><span class="linenos">211</span></a>            <span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-</span><span id="EctLayer.__init__-212"><a href="#EctLayer.__init__-212"><span class="linenos">212</span></a>        <span class="p">)</span>
-</span><span id="EctLayer.__init__-213"><a href="#EctLayer.__init__-213"><span class="linenos">213</span></a>
-</span><span id="EctLayer.__init__-214"><a href="#EctLayer.__init__-214"><span class="linenos">214</span></a>        <span class="c1"># If provided with one set of directions.</span>
-</span><span id="EctLayer.__init__-215"><a href="#EctLayer.__init__-215"><span class="linenos">215</span></a>        <span class="c1"># For backwards compatibility.</span>
-</span><span id="EctLayer.__init__-216"><a href="#EctLayer.__init__-216"><span class="linenos">216</span></a>        <span class="k">if</span> <span class="n">V</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-</span><span id="EctLayer.__init__-217"><a href="#EctLayer.__init__-217"><span class="linenos">217</span></a>            <span class="n">V</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="EctLayer.__init__-218"><a href="#EctLayer.__init__-218"><span class="linenos">218</span></a>
-</span><span id="EctLayer.__init__-219"><a href="#EctLayer.__init__-219"><span class="linenos">219</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">V</span>
-</span><span id="EctLayer.__init__-220"><a href="#EctLayer.__init__-220"><span class="linenos">220</span></a>
-</span><span id="EctLayer.__init__-221"><a href="#EctLayer.__init__-221"><span class="linenos">221</span></a>        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;points&quot;</span><span class="p">:</span>
-</span><span id="EctLayer.__init__-222"><a href="#EctLayer.__init__-222"><span class="linenos">222</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_points</span>
-</span><span id="EctLayer.__init__-223"><a href="#EctLayer.__init__-223"><span class="linenos">223</span></a>        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;edges&quot;</span><span class="p">:</span>
-</span><span id="EctLayer.__init__-224"><a href="#EctLayer.__init__-224"><span class="linenos">224</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_edges</span>
-</span><span id="EctLayer.__init__-225"><a href="#EctLayer.__init__-225"><span class="linenos">225</span></a>        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;faces&quot;</span><span class="p">:</span>
-</span><span id="EctLayer.__init__-226"><a href="#EctLayer.__init__-226"><span class="linenos">226</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_faces</span>
+    <a class="headerlink" href="#ECTLayer.__init__"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ECTLayer.__init__-205"><a href="#ECTLayer.__init__-205"><span class="linenos">205</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ECTConfig</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="ECTLayer.__init__-206"><a href="#ECTLayer.__init__-206"><span class="linenos">206</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span><span id="ECTLayer.__init__-207"><a href="#ECTLayer.__init__-207"><span class="linenos">207</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+</span><span id="ECTLayer.__init__-208"><a href="#ECTLayer.__init__-208"><span class="linenos">208</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="ECTLayer.__init__-209"><a href="#ECTLayer.__init__-209"><span class="linenos">209</span></a>            <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">bump_steps</span><span class="p">)</span>
+</span><span id="ECTLayer.__init__-210"><a href="#ECTLayer.__init__-210"><span class="linenos">210</span></a>            <span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="ECTLayer.__init__-211"><a href="#ECTLayer.__init__-211"><span class="linenos">211</span></a>            <span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+</span><span id="ECTLayer.__init__-212"><a href="#ECTLayer.__init__-212"><span class="linenos">212</span></a>        <span class="p">)</span>
+</span><span id="ECTLayer.__init__-213"><a href="#ECTLayer.__init__-213"><span class="linenos">213</span></a>
+</span><span id="ECTLayer.__init__-214"><a href="#ECTLayer.__init__-214"><span class="linenos">214</span></a>        <span class="c1"># If provided with one set of directions.</span>
+</span><span id="ECTLayer.__init__-215"><a href="#ECTLayer.__init__-215"><span class="linenos">215</span></a>        <span class="c1"># For backwards compatibility.</span>
+</span><span id="ECTLayer.__init__-216"><a href="#ECTLayer.__init__-216"><span class="linenos">216</span></a>        <span class="k">if</span> <span class="n">V</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</span><span id="ECTLayer.__init__-217"><a href="#ECTLayer.__init__-217"><span class="linenos">217</span></a>            <span class="n">V</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="ECTLayer.__init__-218"><a href="#ECTLayer.__init__-218"><span class="linenos">218</span></a>
+</span><span id="ECTLayer.__init__-219"><a href="#ECTLayer.__init__-219"><span class="linenos">219</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">V</span>
+</span><span id="ECTLayer.__init__-220"><a href="#ECTLayer.__init__-220"><span class="linenos">220</span></a>
+</span><span id="ECTLayer.__init__-221"><a href="#ECTLayer.__init__-221"><span class="linenos">221</span></a>        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;points&quot;</span><span class="p">:</span>
+</span><span id="ECTLayer.__init__-222"><a href="#ECTLayer.__init__-222"><span class="linenos">222</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_points</span>
+</span><span id="ECTLayer.__init__-223"><a href="#ECTLayer.__init__-223"><span class="linenos">223</span></a>        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;edges&quot;</span><span class="p">:</span>
+</span><span id="ECTLayer.__init__-224"><a href="#ECTLayer.__init__-224"><span class="linenos">224</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_edges</span>
+</span><span id="ECTLayer.__init__-225"><a href="#ECTLayer.__init__-225"><span class="linenos">225</span></a>        <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">ect_type</span> <span class="o">==</span> <span class="s2">&quot;faces&quot;</span><span class="p">:</span>
+</span><span id="ECTLayer.__init__-226"><a href="#ECTLayer.__init__-226"><span class="linenos">226</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span> <span class="o">=</span> <span class="n">compute_ect_faces</span>
 </span></pre></div>
 
 
@@ -1019,56 +1019,56 @@ shape [num_discretization_steps, batch_size, num_thetas]</li>
 
 
                             </div>
-                            <div id="EctLayer.config" class="classattr">
+                            <div id="ECTLayer.config" class="classattr">
                                 <div class="attr variable">
             <span class="name">config</span>
 
         
     </div>
-    <a class="headerlink" href="#EctLayer.config"></a>
+    <a class="headerlink" href="#ECTLayer.config"></a>
     
     
 
                             </div>
-                            <div id="EctLayer.lin" class="classattr">
+                            <div id="ECTLayer.lin" class="classattr">
                                 <div class="attr variable">
             <span class="name">lin</span>
 
         
     </div>
-    <a class="headerlink" href="#EctLayer.lin"></a>
+    <a class="headerlink" href="#ECTLayer.lin"></a>
     
     
 
                             </div>
-                            <div id="EctLayer.v" class="classattr">
+                            <div id="ECTLayer.v" class="classattr">
                                 <div class="attr variable">
             <span class="name">v</span>
 
         
     </div>
-    <a class="headerlink" href="#EctLayer.v"></a>
+    <a class="headerlink" href="#ECTLayer.v"></a>
     
     
 
                             </div>
-                            <div id="EctLayer.forward" class="classattr">
-                                        <input id="EctLayer.forward-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+                            <div id="ECTLayer.forward" class="classattr">
+                                        <input id="ECTLayer.forward-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
             
         <span class="def">def</span>
         <span class="name">forward</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">batch</span><span class="p">:</span> <span class="n"><a href="#Batch">Batch</a></span></span><span class="return-annotation">):</span></span>
 
-                <label class="view-source-button" for="EctLayer.forward-view-source"><span>View Source</span></label>
+                <label class="view-source-button" for="ECTLayer.forward-view-source"><span>View Source</span></label>
 
     </div>
-    <a class="headerlink" href="#EctLayer.forward"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="EctLayer.forward-228"><a href="#EctLayer.forward-228"><span class="linenos">228</span></a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Batch</span><span class="p">):</span>
-</span><span id="EctLayer.forward-229"><a href="#EctLayer.forward-229"><span class="linenos">229</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward method for the ECT Layer.&quot;&quot;&quot;</span>
-</span><span id="EctLayer.forward-230"><a href="#EctLayer.forward-230"><span class="linenos">230</span></a>        <span class="n">ect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="p">)</span>
-</span><span id="EctLayer.forward-231"><a href="#EctLayer.forward-231"><span class="linenos">231</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">normalized</span><span class="p">:</span>
-</span><span id="EctLayer.forward-232"><a href="#EctLayer.forward-232"><span class="linenos">232</span></a>            <span class="k">return</span> <span class="n">normalize</span><span class="p">(</span><span class="n">ect</span><span class="p">)</span>
-</span><span id="EctLayer.forward-233"><a href="#EctLayer.forward-233"><span class="linenos">233</span></a>        <span class="k">return</span> <span class="n">ect</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+    <a class="headerlink" href="#ECTLayer.forward"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ECTLayer.forward-228"><a href="#ECTLayer.forward-228"><span class="linenos">228</span></a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Batch</span><span class="p">):</span>
+</span><span id="ECTLayer.forward-229"><a href="#ECTLayer.forward-229"><span class="linenos">229</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward method for the ECT Layer.&quot;&quot;&quot;</span>
+</span><span id="ECTLayer.forward-230"><a href="#ECTLayer.forward-230"><span class="linenos">230</span></a>        <span class="n">ect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_ect</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="p">)</span>
+</span><span id="ECTLayer.forward-231"><a href="#ECTLayer.forward-231"><span class="linenos">231</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">normalized</span><span class="p">:</span>
+</span><span id="ECTLayer.forward-232"><a href="#ECTLayer.forward-232"><span class="linenos">232</span></a>            <span class="k">return</span> <span class="n">normalize</span><span class="p">(</span><span class="n">ect</span><span class="p">)</span>
+</span><span id="ECTLayer.forward-233"><a href="#ECTLayer.forward-233"><span class="linenos">233</span></a>        <span class="k">return</span> <span class="n">ect</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -1081,54 +1081,54 @@ shape [num_discretization_steps, batch_size, num_thetas]</li>
                                 <h5>Inherited Members</h5>
                                 <dl>
                                     <div><dt>torch.nn.modules.module.Module</dt>
-                                <dd id="EctLayer.dump_patches" class="variable">dump_patches</dd>
-                <dd id="EctLayer.training" class="variable">training</dd>
-                <dd id="EctLayer.call_super_init" class="variable">call_super_init</dd>
-                <dd id="EctLayer.register_buffer" class="function">register_buffer</dd>
-                <dd id="EctLayer.register_parameter" class="function">register_parameter</dd>
-                <dd id="EctLayer.add_module" class="function">add_module</dd>
-                <dd id="EctLayer.register_module" class="function">register_module</dd>
-                <dd id="EctLayer.get_submodule" class="function">get_submodule</dd>
-                <dd id="EctLayer.get_parameter" class="function">get_parameter</dd>
-                <dd id="EctLayer.get_buffer" class="function">get_buffer</dd>
-                <dd id="EctLayer.get_extra_state" class="function">get_extra_state</dd>
-                <dd id="EctLayer.set_extra_state" class="function">set_extra_state</dd>
-                <dd id="EctLayer.apply" class="function">apply</dd>
-                <dd id="EctLayer.cuda" class="function">cuda</dd>
-                <dd id="EctLayer.ipu" class="function">ipu</dd>
-                <dd id="EctLayer.xpu" class="function">xpu</dd>
-                <dd id="EctLayer.cpu" class="function">cpu</dd>
-                <dd id="EctLayer.type" class="function">type</dd>
-                <dd id="EctLayer.float" class="function">float</dd>
-                <dd id="EctLayer.double" class="function">double</dd>
-                <dd id="EctLayer.half" class="function">half</dd>
-                <dd id="EctLayer.bfloat16" class="function">bfloat16</dd>
-                <dd id="EctLayer.to_empty" class="function">to_empty</dd>
-                <dd id="EctLayer.to" class="function">to</dd>
-                <dd id="EctLayer.register_full_backward_pre_hook" class="function">register_full_backward_pre_hook</dd>
-                <dd id="EctLayer.register_backward_hook" class="function">register_backward_hook</dd>
-                <dd id="EctLayer.register_full_backward_hook" class="function">register_full_backward_hook</dd>
-                <dd id="EctLayer.register_forward_pre_hook" class="function">register_forward_pre_hook</dd>
-                <dd id="EctLayer.register_forward_hook" class="function">register_forward_hook</dd>
-                <dd id="EctLayer.register_state_dict_pre_hook" class="function">register_state_dict_pre_hook</dd>
-                <dd id="EctLayer.state_dict" class="function">state_dict</dd>
-                <dd id="EctLayer.register_load_state_dict_post_hook" class="function">register_load_state_dict_post_hook</dd>
-                <dd id="EctLayer.load_state_dict" class="function">load_state_dict</dd>
-                <dd id="EctLayer.parameters" class="function">parameters</dd>
-                <dd id="EctLayer.named_parameters" class="function">named_parameters</dd>
-                <dd id="EctLayer.buffers" class="function">buffers</dd>
-                <dd id="EctLayer.named_buffers" class="function">named_buffers</dd>
-                <dd id="EctLayer.children" class="function">children</dd>
-                <dd id="EctLayer.named_children" class="function">named_children</dd>
-                <dd id="EctLayer.modules" class="function">modules</dd>
-                <dd id="EctLayer.named_modules" class="function">named_modules</dd>
-                <dd id="EctLayer.train" class="function">train</dd>
-                <dd id="EctLayer.eval" class="function">eval</dd>
-                <dd id="EctLayer.requires_grad_" class="function">requires_grad_</dd>
-                <dd id="EctLayer.zero_grad" class="function">zero_grad</dd>
-                <dd id="EctLayer.share_memory" class="function">share_memory</dd>
-                <dd id="EctLayer.extra_repr" class="function">extra_repr</dd>
-                <dd id="EctLayer.compile" class="function">compile</dd>
+                                <dd id="ECTLayer.dump_patches" class="variable">dump_patches</dd>
+                <dd id="ECTLayer.training" class="variable">training</dd>
+                <dd id="ECTLayer.call_super_init" class="variable">call_super_init</dd>
+                <dd id="ECTLayer.register_buffer" class="function">register_buffer</dd>
+                <dd id="ECTLayer.register_parameter" class="function">register_parameter</dd>
+                <dd id="ECTLayer.add_module" class="function">add_module</dd>
+                <dd id="ECTLayer.register_module" class="function">register_module</dd>
+                <dd id="ECTLayer.get_submodule" class="function">get_submodule</dd>
+                <dd id="ECTLayer.get_parameter" class="function">get_parameter</dd>
+                <dd id="ECTLayer.get_buffer" class="function">get_buffer</dd>
+                <dd id="ECTLayer.get_extra_state" class="function">get_extra_state</dd>
+                <dd id="ECTLayer.set_extra_state" class="function">set_extra_state</dd>
+                <dd id="ECTLayer.apply" class="function">apply</dd>
+                <dd id="ECTLayer.cuda" class="function">cuda</dd>
+                <dd id="ECTLayer.ipu" class="function">ipu</dd>
+                <dd id="ECTLayer.xpu" class="function">xpu</dd>
+                <dd id="ECTLayer.cpu" class="function">cpu</dd>
+                <dd id="ECTLayer.type" class="function">type</dd>
+                <dd id="ECTLayer.float" class="function">float</dd>
+                <dd id="ECTLayer.double" class="function">double</dd>
+                <dd id="ECTLayer.half" class="function">half</dd>
+                <dd id="ECTLayer.bfloat16" class="function">bfloat16</dd>
+                <dd id="ECTLayer.to_empty" class="function">to_empty</dd>
+                <dd id="ECTLayer.to" class="function">to</dd>
+                <dd id="ECTLayer.register_full_backward_pre_hook" class="function">register_full_backward_pre_hook</dd>
+                <dd id="ECTLayer.register_backward_hook" class="function">register_backward_hook</dd>
+                <dd id="ECTLayer.register_full_backward_hook" class="function">register_full_backward_hook</dd>
+                <dd id="ECTLayer.register_forward_pre_hook" class="function">register_forward_pre_hook</dd>
+                <dd id="ECTLayer.register_forward_hook" class="function">register_forward_hook</dd>
+                <dd id="ECTLayer.register_state_dict_pre_hook" class="function">register_state_dict_pre_hook</dd>
+                <dd id="ECTLayer.state_dict" class="function">state_dict</dd>
+                <dd id="ECTLayer.register_load_state_dict_post_hook" class="function">register_load_state_dict_post_hook</dd>
+                <dd id="ECTLayer.load_state_dict" class="function">load_state_dict</dd>
+                <dd id="ECTLayer.parameters" class="function">parameters</dd>
+                <dd id="ECTLayer.named_parameters" class="function">named_parameters</dd>
+                <dd id="ECTLayer.buffers" class="function">buffers</dd>
+                <dd id="ECTLayer.named_buffers" class="function">named_buffers</dd>
+                <dd id="ECTLayer.children" class="function">children</dd>
+                <dd id="ECTLayer.named_children" class="function">named_children</dd>
+                <dd id="ECTLayer.modules" class="function">modules</dd>
+                <dd id="ECTLayer.named_modules" class="function">named_modules</dd>
+                <dd id="ECTLayer.train" class="function">train</dd>
+                <dd id="ECTLayer.eval" class="function">eval</dd>
+                <dd id="ECTLayer.requires_grad_" class="function">requires_grad_</dd>
+                <dd id="ECTLayer.zero_grad" class="function">zero_grad</dd>
+                <dd id="ECTLayer.share_memory" class="function">share_memory</dd>
+                <dd id="ECTLayer.extra_repr" class="function">extra_repr</dd>
+                <dd id="ECTLayer.compile" class="function">compile</dd>
 
             </div>
                                 </dl>
