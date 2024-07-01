@@ -33,17 +33,22 @@ with or without CUDA support. The DECT implementation also relies on the
 of a vector given an index vector. 
 
 - First install `torch` and `torch-scatter`.
-   ```{python}
+
+   ```python
    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
    pip install torch-scatter -f https://data.pyg.org/whl/torch-2.1.0+${CUDA}.html
    ```
+
 - Then install our package in either one of two ways:
    - As a git submodule 
-   ```{pyton}
+
+   ```sh
    git submodule add https://github.com/aidos-lab/dect.git
    ```
+
    - Or as a pip installable package. 
-   ```{python}
+   
+   ```sh
    pip install git+https://github.com/aidos-lab/dect.git
    ```
 
@@ -54,7 +59,7 @@ ECT of the gif of this readme.
 The code is provided on an as is basis. You are cordially invited to both contribute and 
 provide feedback. Do not hesitate to contact us.
 
-```{python}
+```python
 import torch
 from torch_geometric.data import Data, Batch
 from dect.ect import EctConfig, EctLayer

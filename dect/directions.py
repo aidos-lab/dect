@@ -7,7 +7,9 @@ import itertools
 import torch
 
 
-def generate_uniform_directions(num_thetas: int = 64, d: int = 3, device: str = "cpu"):
+def generate_uniform_directions(
+    num_thetas: int = 64, d: int = 3, device: str = "cpu"
+):
     """
     Generate randomly sampled directions from a sphere in d dimensions.
 
@@ -49,8 +51,12 @@ def generate_uniform_2d_directions(num_thetas: int = 64, device: str = "cpu"):
     """
     v = torch.vstack(
         [
-            torch.sin(torch.linspace(0, 2 * torch.pi, num_thetas, device=device)),
-            torch.cos(torch.linspace(0, 2 * torch.pi, num_thetas, device=device)),
+            torch.sin(
+                torch.linspace(0, 2 * torch.pi, num_thetas, device=device)
+            ),
+            torch.cos(
+                torch.linspace(0, 2 * torch.pi, num_thetas, device=device)
+            ),
         ]
     )
 
@@ -88,3 +94,19 @@ def generate_multiview_directions(num_thetas: int, bump_steps: int, d: int):
         v[idx, idx_pair[1], :] = w[1]
 
     return v
+
+
+def test_fn():
+    """Yields
+    ------
+    err_code : int
+        Non-zero value indicates error code, or zero on success.
+    err_msg : str or None
+        Human readable error message, or None on success.
+
+    Returns
+    -------
+    int
+        Description of anonymous integer return value.
+
+    """
