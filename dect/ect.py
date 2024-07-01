@@ -9,7 +9,7 @@ from torch_scatter import segment_add_coo
 
 
 @dataclass(frozen=True)
-class EctConfig:
+class ECTConfig:
     """
     Configuration of the ECT Layer.
     """
@@ -198,10 +198,10 @@ def normalize(ect):
     return ect / torch.amax(ect, dim=(2, 3)).unsqueeze(2).unsqueeze(2)
 
 
-class EctLayer(nn.Module):
+class ECTLayer(nn.Module):
     """Machine learning layer for computing the ECT."""
 
-    def __init__(self, config: EctConfig, V=None):
+    def __init__(self, config: ECTConfig, V=None):
         super().__init__()
         self.config = config
         self.lin = (
