@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import torch
 from torch import nn
 from torch_scatter import segment_add_coo
+import geotorch
 
 
 @dataclass(frozen=True)
@@ -209,7 +210,8 @@ class ECTLayer(nn.Module):
         if V.ndim == 2:
             V.unsqueeze(0)
 
-        self.v = V
+        # The set of directions is added
+        self.v = nn.Parameter(V, requires_grad=config.fixed)
 
         if config.ect_type == "points":
             self.compute_ect = compute_ect_points
@@ -217,6 +219,11 @@ class ECTLayer(nn.Module):
             self.compute_ect = compute_ect_edges
         elif config.ect_type == "faces":
             self.compute_ect = compute_ect_faces
+
+    def postinit(self):
+        """Register directions for geotorch."""
+        if self.config.fixed:
+            geotorch.constraints.sphere(self, "v")
 
     def forward(self, batch: Batch):
         """Forward method for the ECT Layer."""
