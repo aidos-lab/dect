@@ -21,6 +21,7 @@ class ECTConfig:
     ect_type: str = "points"
     num_features: int = 3
     normalized: bool = False
+    fixed: bool = False
 
 
 @dataclass()
@@ -195,7 +196,7 @@ def normalize(ect):
 class ECTLayer(nn.Module):
     """Machine learning layer for computing the ECT."""
 
-    def __init__(self, config: ECTConfig, V=None):
+    def __init__(self, config: ECTConfig, v=None):
         super().__init__()
         self.config = config
         self.lin = nn.Parameter(
@@ -207,11 +208,16 @@ class ECTLayer(nn.Module):
 
         # If provided with one set of directions.
         # For backwards compatibility.
-        if V.ndim == 2:
-            V.unsqueeze(0)
+        if v.ndim == 2:
+            v.unsqueeze(0)
 
         # The set of directions is added
-        self.v = nn.Parameter(V, requires_grad=config.fixed)
+        # TODO: Requires testing.
+        if config.fixed:
+            self.v = nn.Parameter(v, requires_grad=False)
+        else:
+            self.v = nn.Parameter(v, requires_grad=True)
+            geotorch.constraints.sphere(self, "v")
 
         if config.ect_type == "points":
             self.compute_ect = compute_ect_points
@@ -219,11 +225,6 @@ class ECTLayer(nn.Module):
             self.compute_ect = compute_ect_edges
         elif config.ect_type == "faces":
             self.compute_ect = compute_ect_faces
-
-    def postinit(self):
-        """Register directions for geotorch."""
-        if self.config.fixed:
-            geotorch.constraints.sphere(self, "v")
 
     def forward(self, batch: Batch):
         """Forward method for the ECT Layer."""
