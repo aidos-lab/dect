@@ -37,7 +37,9 @@ jobs:
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
       - name: Build Docs
-        run: python -m pdoc --docformat numpy --logo "https://avatars.githubusercontent.com/u/88346553?s=200&v=4" dect -o ./docs
+        run: |
+          mkdir -p ./docs
+          python -m pdoc --docformat numpy --logo "https://avatars.githubusercontent.com/u/88346553?s=200&v=4" dect -o ./docs
 
       - uses: actions/upload-pages-artifact@v3
         with:
