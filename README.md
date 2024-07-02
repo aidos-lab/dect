@@ -54,10 +54,12 @@ of a vector given an index vector.
 
 ## Usage
 
-For example usage, we provide the `notebooks/example.ipynb` file and the code therein reproduces the 
-ECT of the gif of this readme. 
-The code is provided on an as-is basis; see [LICENSE.md](https://github.com/aidos-lab/dect/blob/main/LICENSE.md) for more information.
-You are cordially invited to both contribute and provide feedback. Do not hesitate to contact us!
+For a demonstrastration of our new ECT computation, we provide the
+`notebooks/example.ipynb` file and the code therein provides an intuitive
+example with explanation. The code is provided on an as-is basis; see
+[LICENSE.md](https://github.com/aidos-lab/dect/blob/main/LICENSE.md) for more
+information. You are cordially invited to both contribute and provide feedback.
+Do not hesitate to contact us!
 
 ```python
 import torch
