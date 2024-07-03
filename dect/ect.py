@@ -15,13 +15,11 @@ class ECTConfig:
     Configuration of the ECT Layer.
     """
 
-    num_thetas: int = 32
     bump_steps: int = 32
     radius: float = 1.1
     ect_type: str = "points"
-    num_features: int = 3
     normalized: bool = False
-    fixed: bool = False
+    fixed: bool = True
 
 
 @dataclass()
@@ -214,14 +212,15 @@ class ECTLayer(nn.Module):
         # The set of directions is added
         # TODO: Requires testing.
         if config.fixed:
-            self.v = nn.Parameter(v, requires_grad=False)
+            self.v = nn.Parameter(v.movedim(-1, -2), requires_grad=False)
         else:
-            self.v = nn.Parameter(torch.zeros_like(v))
-            geotorch.constraints.sphere(self, "v")
+            # Movedim to make geotorch happy, me not happy.
+            self.v = nn.Parameter(torch.zeros_like(v.movedim(-1, -2)))
+            geotorch.constraints.sphere(self, "v", radius=config.radius)
             # Since geotorch randomizes the vector during initialization, we
             # assign the values after registering it with spherical constraints.
             # See Geotorch documentation for examples.
-            self.v = nn.Parameter(v, requires_grad=True)
+            self.v = v.movedim(-1, -2)
 
         if config.ect_type == "points":
             self.compute_ect = compute_ect_points
@@ -232,7 +231,8 @@ class ECTLayer(nn.Module):
 
     def forward(self, batch: Batch):
         """Forward method for the ECT Layer."""
-        ect = self.compute_ect(batch, self.v, self.lin)
+        # Movedim for geotorch.
+        ect = self.compute_ect(batch, self.v.movedim(-1, -2), self.lin)
         if self.config.normalized:
             return normalize(ect)
         return ect.squeeze()
