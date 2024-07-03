@@ -216,8 +216,12 @@ class ECTLayer(nn.Module):
         if config.fixed:
             self.v = nn.Parameter(v, requires_grad=False)
         else:
-            self.v = nn.Parameter(v, requires_grad=True)
+            self.v = nn.Parameter(torch.zeros_like(v))
             geotorch.constraints.sphere(self, "v")
+            # Since geotorch randomizes the vector during initialization, we
+            # assign the values after registering it with spherical constraints.
+            # See Geotorch documentation for examples.
+            self.v = nn.Parameter(v, requires_grad=True)
 
         if config.ect_type == "points":
             self.compute_ect = compute_ect_points
