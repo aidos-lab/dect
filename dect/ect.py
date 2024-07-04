@@ -227,24 +227,6 @@ class ECTLayer(nn.Module):
     config: ECTConfig
         The configuration config of the ECT layer.
 
-    Config Parameters
-    ----------
-    bump_steps : int
-        The number of steps to discretize the ECT into.
-    radius : float
-        The radius of the circle the directions lie on. Usually this is a bit
-        larger than the objects we wish to compute the ECT for, which in most
-        cases have radius 1. For now it defaults to 1 as well.
-    ect_type : str
-        The type of ECT we wish to compute. Can be "points" for point clouds,
-        "edges" for graphs or "faces" for meshes.
-    normalized: bool
-        Whether or not to normalize the ECT. Only work with ect_type set to
-        points and normalized the ECT to the interval [0,1].
-    fixed: bool
-        Option to keep the directions fixed or not. In case the directions are
-        learnable, we can use backpropagation to optimize over a set of
-        directions. See notebooks for examples.
     """
 
     def __init__(self, config: ECTConfig, v=None):
