@@ -27,6 +27,7 @@ jobs:
         run: |
           pip install torch==2.2.0
           pip install torch-scatter -f https://data.pyg.org/whl/torch-2.2.0+cpu.html
+          pip install geotorch
           pip install pdoc
 
       # ADJUST THIS: install all dependencies (including pdoc)

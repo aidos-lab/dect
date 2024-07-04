@@ -12,6 +12,7 @@ version = "0.0.0"
 dependencies = [
     "torch-scatter",
     "torch",
+    "geotorch"
 ]
 
 requires-python = ">=3.10"
