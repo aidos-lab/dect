@@ -64,13 +64,13 @@ Do not hesitate to contact us!
 ```python
 import torch
 from torch_geometric.data import Data, Batch
-from dect.ect import EctConfig, EctLayer
+from dect.ect import ECTConfig, ECTLayer
 from dect.directions import generate_uniform_2d_directions
 
 
-v = generate_uniform_2d_directions(num_thetas=64, device="cpu")
+v = generate_uniform_2d_directions(num_thetas=64)
 
-layer = EctLayer(EctConfig(), V=v)
+layer = ECTLayer(ECTConfig(), V=v)
 
 points_coordinates = torch.tensor(
     [[0.5, 0.0], [-0.5, 0.0], [0.5, 0.5]], requires_grad=True
