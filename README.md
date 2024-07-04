@@ -20,7 +20,7 @@ If you find our work useful, please consider using the following citation:
   eprint        = {2310.07630},
   archiveprefix = {arXiv},
   primaryclass  = {cs.LG},
-  repository    = {https://github.com/aidos-lab/DECT},
+  repository    = {https://github.com/aidos-lab/dect-evaluation},
   url           = {https://openreview.net/forum?id=MO632iPq3I},
 }
 ```
@@ -55,7 +55,7 @@ of a vector given an index vector.
 ## Usage
 
 For a demonstrastration of our new ECT computation, we provide the
-`notebooks/example.ipynb` file and the code therein provides an intuitive
+`notebooks/01_example_usage.ipynb` file and the code therein provides an intuitive
 example with explanation. The code is provided on an as-is basis; see
 [LICENSE.md](https://github.com/aidos-lab/dect/blob/main/LICENSE.md) for more
 information. You are cordially invited to both contribute and provide feedback.
