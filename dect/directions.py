@@ -53,7 +53,7 @@ def generate_uniform_2d_directions(num_thetas: int = 64):
     return v
 
 
-def generate_multiview_directions(num_thetas: int, bump_steps: int, d: int):
+def generate_multiview_directions(num_thetas: int, d: int):
     """
     Generates multiple sets of structured directions in n dimensions.
 
@@ -66,11 +66,18 @@ def generate_multiview_directions(num_thetas: int, bump_steps: int, d: int):
     channel consists of a structured ect along a hyperplane. For the 3-d case we
     would obtain a 3 channel ect with direction sampled along the xy, xz and yz
     planes in three dimensions.
+
+    Parameters
+    ----------
+    num_thetas: int
+        The number of directions to generate.
+    d: int
+        The dimension of the unit sphere. Default is 3 (hence R^3)
     """
     w = torch.vstack(
         [
-            torch.sin(torch.linspace(0, 2 * torch.pi, bump_steps)),
-            torch.cos(torch.linspace(0, 2 * torch.pi, bump_steps)),
+            torch.sin(torch.linspace(0, 2 * torch.pi, num_thetas)),
+            torch.cos(torch.linspace(0, 2 * torch.pi, num_thetas)),
         ]
     )
 
