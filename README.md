@@ -70,7 +70,7 @@ from dect.directions import generate_uniform_2d_directions
 
 v = generate_uniform_2d_directions(num_thetas=64)
 
-layer = ECTLayer(ECTConfig(), V=v)
+layer = ECTLayer(ECTConfig(), v=v)
 
 points_coordinates = torch.tensor(
     [[0.5, 0.0], [-0.5, 0.0], [0.5, 0.5]], requires_grad=True

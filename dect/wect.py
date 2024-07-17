@@ -5,7 +5,7 @@ import torch
 from torch import nn
 from torch_scatter import segment_add_coo
 
-from ect import ECTConfig, Batch, normalize
+from dect.ect import ECTConfig, Batch, normalize
 
 
 def compute_wecc(
@@ -17,26 +17,26 @@ def compute_wecc(
 ):
     """Computes the weighted Euler Characteristic curve.
 
-        Parameters
-        ----------
-        nh : torch.FloatTensor
-            The node heights, computed as the inner product of the node coordinates
-            x and the direction vector v.
-        index: torch.LongTensor
-            The index that indicates to which pointcloud a node height belongs. For
-            the node heights it is the same as the batch index, for the higher order
-            simplices it will have to be recomputed.
-        lin: torch.FloatTensor
-            The discretization of the interval [-1,1] each node height falls in this
-            range due to rescaling in normalizing the data.
-        weight: torch.FloatTensor
-            The weight of the node, edge or face. It is the maximum of the node
-            weights for the edges and faces.
-        scale: torch.FloatTensor
-            A single number that scales the sigmoid function by multiplying the
-            sigmoid with the scale. With high (100>) values, the ect will resemble a
-            discrete ECT and with lower values it will smooth the ECT.
-        """
+    Parameters
+    ----------
+    nh : torch.FloatTensor
+        The node heights, computed as the inner product of the node coordinates
+        x and the direction vector v.
+    index: torch.LongTensor
+        The index that indicates to which pointcloud a node height belongs. For
+        the node heights it is the same as the batch index, for the higher order
+        simplices it will have to be recomputed.
+    lin: torch.FloatTensor
+        The discretization of the interval [-1,1] each node height falls in this
+        range due to rescaling in normalizing the data.
+    weight: torch.FloatTensor
+        The weight of the node, edge or face. It is the maximum of the node
+        weights for the edges and faces.
+    scale: torch.FloatTensor
+        A single number that scales the sigmoid function by multiplying the
+        sigmoid with the scale. With high (100>) values, the ect will resemble a
+        discrete ECT and with lower values it will smooth the ECT.
+    """
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh)) * weight.view(
         1, -1, 1
     )
@@ -52,19 +52,19 @@ def compute_wect(
 ):
     """Computes the Weighted Euler Characteristic Transform of a batch of point clouds.
 
-        Parameters
-        ----------
-        batch : Batch
-            A batch of data containing the node coordinates, batch index, edge_index, face, and
-            node weights.
-        v: torch.FloatTensor
-            The direction vector that contains the directions.
-        lin: torch.FloatTensor
-            The discretization of the interval [-1,1] each node height falls in this
-            range due to rescaling in normalizing the data.
-        wect_type: str
-            The type of WECT to compute. Can be "points", "edges", or "faces".
-        """
+    Parameters
+    ----------
+    batch : Batch
+        A batch of data containing the node coordinates, batch index, edge_index, face, and
+        node weights.
+    v: torch.FloatTensor
+        The direction vector that contains the directions.
+    lin: torch.FloatTensor
+        The discretization of the interval [-1,1] each node height falls in this
+        range due to rescaling in normalizing the data.
+    wect_type: str
+        The type of WECT to compute. Can be "points", "edges", or "faces".
+    """
     nh = batch.x @ v
     if wect_type in ["edges", "faces"]:
         edge_weights, _ = batch.node_weights[batch.edge_index].max(axis=0)
@@ -132,21 +132,21 @@ class WECTLayer(nn.Module):
         """Forward method for the ECT Layer.
 
 
-                Parameters
-                ----------
-                batch : Batch
-                    A batch of data containing the node coordinates, edges, faces,
-                    batch index, and node_weights. It should follow the pytorch geometric conventions.
+        Parameters
+        ----------
+        batch : Batch
+            A batch of data containing the node coordinates, edges, faces,
+            batch index, and node_weights. It should follow the pytorch geometric conventions.
 
-                Returns
-                ----------
-                wect: torch.FloatTensor
-                    Returns the WECT of each data object in the batch. If the layer is
-                    initialized with v of the shape [ndims,num_thetas], the returned WECT
-                    has shape [batch,num_thetas,bump_steps]. In case the layer is
-                    initialized with v of the form [n_channels, ndims, num_thetas] the
-                    returned WECT has the shape [batch,n_channels,num_thetas,bump_steps]
-                """
+        Returns
+        ----------
+        wect: torch.FloatTensor
+            Returns the WECT of each data object in the batch. If the layer is
+            initialized with v of the shape [ndims,num_thetas], the returned WECT
+            has shape [batch,num_thetas,bump_steps]. In case the layer is
+            initialized with v of the form [n_channels, ndims, num_thetas] the
+            returned WECT has the shape [batch,n_channels,num_thetas,bump_steps]
+        """
         # Movedim for geotorch
         wect = compute_wect(
             batch, self.v.movedim(-1, -2), self.lin, self.config.ect_type
