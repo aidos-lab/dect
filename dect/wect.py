@@ -77,14 +77,18 @@ def compute_wect(
         return compute_wecc(nh, batch.batch, lin, batch.node_weights)
     if wect_type == "edges":
         # noinspection PyUnboundLocalVariable
-        return compute_wecc(nh, batch.batch, lin, batch.node_weights) - compute_wecc(
+        return compute_wecc(
+            nh, batch.batch, lin, batch.node_weights
+        ) - compute_wecc(
             eh, batch.batch[batch.edge_index[0]], lin, edge_weights
         )
     if wect_type == "faces":
         # noinspection PyUnboundLocalVariable
         return (
             compute_wecc(nh, batch.batch, lin, batch.node_weights)
-            - compute_wecc(eh, batch.batch[batch.edge_index[0]], lin, edge_weights)
+            - compute_wecc(
+                eh, batch.batch[batch.edge_index[0]], lin, edge_weights
+            )
             + compute_wecc(fh, batch.batch[batch.face[0]], lin, face_weights)
         )
     raise ValueError(f"Invalid wect_type: {wect_type}")
@@ -106,9 +110,9 @@ class WECTLayer(nn.Module):
         super().__init__()
         self.config = config
         self.lin = nn.Parameter(
-            torch.linspace(-config.radius, config.radius, config.bump_steps).view(
-                -1, 1, 1, 1
-            ),
+            torch.linspace(
+                -config.radius, config.radius, config.bump_steps
+            ).view(-1, 1, 1, 1),
             requires_grad=False,
         )
 

@@ -109,7 +109,9 @@ def compute_ecc(
     return segment_add_coo(ecc, index)
 
 
-def compute_ect_points(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
+def compute_ect_points(
+    batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
+):
     """Computes the Euler Characteristic Transform of a batch of point clouds.
 
     Parameters
@@ -126,7 +128,9 @@ def compute_ect_points(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTenso
     return compute_ecc(nh, batch.batch, lin)
 
 
-def compute_ect_edges(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
+def compute_ect_edges(
+    batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
+):
     """Computes the Euler Characteristic Transform of a batch of graphs.
 
     Parameters
@@ -159,7 +163,9 @@ def compute_ect_edges(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
     )
 
 
-def compute_ect_faces(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
+def compute_ect_faces(
+    batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
+):
     """Computes the Euler Characteristic Transform of a batch of meshes.
 
     Parameters
@@ -220,9 +226,9 @@ class ECTLayer(nn.Module):
         super().__init__()
         self.config = config
         self.lin = nn.Parameter(
-            torch.linspace(-config.radius, config.radius, config.bump_steps).view(
-                -1, 1, 1, 1
-            ),
+            torch.linspace(
+                -config.radius, config.radius, config.bump_steps
+            ).view(-1, 1, 1, 1),
             requires_grad=False,
         )
 
