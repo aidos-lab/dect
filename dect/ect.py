@@ -60,9 +60,10 @@ class Batch:
     face:
         The indices of the points that span a face in the simplicial complex.
         Conforms to pytorch_geometric standards. Shape has to be of the form
-        [3,num_faces].
+        [3,num_faces] or [4, num_faces], depending on the type of complex
+        (simplicial or cubical).
     node_weights: torch.FloatTensor
-        The weights of the nodes in the complex. The shape has to be
+        Optional weights for the nodes in the complex. The shape has to be
         [num_nodes,].
     """
 
