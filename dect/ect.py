@@ -80,7 +80,7 @@ def compute_ecc(
     lin: torch.FloatTensor,
     scale: float = 100,
 ) -> torch.FloatTensor:
-    """Computes the Euler Characteristic curve.
+    """Computes the Euler Characteristic Curve.
 
     Parameters
     ----------
@@ -216,7 +216,8 @@ class ECTLayer(nn.Module):
     ----------
     v: torch.FloatTensor
         The direction vector that contains the directions. The shape of the
-        tensor v is either [ndims, num_thetas] or [n_channels, ndims, num_thetas].
+        tensor v is either [ndims, num_thetas] or [n_channels, ndims,
+        num_thetas].
     config: ECTConfig
         The configuration config of the ECT layer.
 
