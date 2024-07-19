@@ -15,7 +15,7 @@ def compute_wecc(
     weight: torch.FloatTensor,
     scale: float = 500,
 ):
-    """Computes the weighted Euler Characteristic curve.
+    """Computes the Weighted Euler Characteristic Curve.
 
     Parameters
     ----------
@@ -50,13 +50,15 @@ def compute_wect(
     lin: torch.FloatTensor,
     wect_type: Literal["points"] | Literal["edges"] | Literal["faces"],
 ):
-    """Computes the Weighted Euler Characteristic Transform of a batch of point clouds.
+    """
+    Computes the Weighted Euler Characteristic Transform of a batch of point
+    clouds.
 
     Parameters
     ----------
     batch : Batch
-        A batch of data containing the node coordinates, batch index, edge_index, face, and
-        node weights.
+        A batch of data containing the node coordinates, batch index,
+        edge_index, face, and node weights.
     v: torch.FloatTensor
         The direction vector that contains the directions.
     lin: torch.FloatTensor
@@ -101,9 +103,10 @@ class WECTLayer(nn.Module):
     ----------
     v: torch.FloatTensor
         The direction vector that contains the directions. The shape of the
-        tensor v is either [ndims, num_thetas] or [n_channels, ndims, num_thetas].
+        tensor v is either [ndims, num_thetas] or [n_channels, ndims,
+        num_thetas].
     config : ECTConfig
-        The configuration config of the WECT layer.
+        The configuration object of the WECT layer.
     """
 
     def __init__(self, config: ECTConfig, v=None):
@@ -133,21 +136,22 @@ class WECTLayer(nn.Module):
             self.v = v.movedim(-1, -2)
 
     def forward(self, batch: Batch):
-        """Forward method for the ECT Layer.
+        """Forward method for the WECT Layer.
 
 
         Parameters
         ----------
         batch : Batch
-            A batch of data containing the node coordinates, edges, faces,
-            batch index, and node_weights. It should follow the pytorch geometric conventions.
+            A batch of data containing the node coordinates, edges, faces, batch
+            index, and node_weights. It should follow the pytorch geometric
+            conventions.
 
         Returns
         ----------
         wect: torch.FloatTensor
             Returns the WECT of each data object in the batch. If the layer is
-            initialized with v of the shape [ndims,num_thetas], the returned WECT
-            has shape [batch,num_thetas,bump_steps]. In case the layer is
+            initialized with v of the shape [ndims,num_thetas], the returned
+            WECT has shape [batch,num_thetas,bump_steps]. In case the layer is
             initialized with v of the form [n_channels, ndims, num_thetas] the
             returned WECT has the shape [batch,n_channels,num_thetas,bump_steps]
         """
