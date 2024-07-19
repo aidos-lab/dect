@@ -60,13 +60,18 @@ class Batch:
     face:
         The indices of the points that span a face in the simplicial complex.
         Conforms to pytorch_geometric standards. Shape has to be of the form
-        [3,num_faces].
+        [3,num_faces] or [4, num_faces], depending on the type of complex
+        (simplicial or cubical).
+    node_weights: torch.FloatTensor
+        Optional weights for the nodes in the complex. The shape has to be
+        [num_nodes,].
     """
 
     x: torch.FloatTensor
     batch: torch.LongTensor
     edge_index: torch.LongTensor | None = None
     face: torch.LongTensor | None = None
+    node_weights: torch.FloatTensor | None = None
 
 
 def compute_ecc(
@@ -75,7 +80,7 @@ def compute_ecc(
     lin: torch.FloatTensor,
     scale: float = 100,
 ) -> torch.FloatTensor:
-    """Computes the Euler Characteristic curve.
+    """Computes the Euler Characteristic Curve.
 
     Parameters
     ----------
@@ -89,9 +94,6 @@ def compute_ecc(
     lin: torch.FloatTensor
         The discretization of the interval [-1,1] each node height falls in this
         range due to rescaling in normalizing the data.
-    out: torch.FloatTensor
-        The shape of the resulting tensor after summation. It has to be of the
-        shape [num_discretization_steps, batch_size, num_thetas]
     scale: torch.FloatTensor
         A single number that scales the sigmoid function by multiplying the
         sigmoid with the scale. With high (100>) values, the ect will resemble a
@@ -121,16 +123,13 @@ def compute_ect_points(
     lin: torch.FloatTensor
         The discretization of the interval [-1,1] each node height falls in this
         range due to rescaling in normalizing the data.
-    out: torch.FloatTensor
-        The shape of the resulting tensor after summation. It has to be of the
-        shape [num_discretization_steps, batch_size, num_thetas]
     """
     nh = batch.x @ v
     return compute_ecc(nh, batch.batch, lin)
 
 
 def compute_ect_edges(
-    data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
+    batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
 ):
     """Computes the Euler Characteristic Transform of a batch of graphs.
 
@@ -144,23 +143,20 @@ def compute_ect_edges(
     lin: torch.FloatTensor
         The discretization of the interval [-1,1] each node height falls in this
         range due to rescaling in normalizing the data.
-    out: torch.FloatTensor
-        The shape of the resulting tensor after summation. It has to be of the
-        shape [num_discretization_steps, batch_size, num_thetas]
     """
     # Compute the node heigths
-    nh = data.x @ v
+    nh = batch.x @ v
 
     # Perform a lookup with the edge indices on node heights, this replaces the
     # node index with its node height and then compute the maximum over the
     # columns to compute the edge height.
-    eh, _ = nh[data.edge_index].max(dim=0)
+    eh, _ = nh[batch.edge_index].max(dim=0)
 
     # Compute which batch an edge belongs to. We take the first index of the
     # edge (or faces) and do a lookup on the batch index of that node in the
     # batch indices of the nodes.
-    batch_index_nodes = data.batch
-    batch_index_edges = data.batch[data.edge_index[0]]
+    batch_index_nodes = batch.batch
+    batch_index_edges = batch.batch[batch.edge_index[0]]
 
     return compute_ecc(nh, batch_index_nodes, lin) - compute_ecc(
         eh, batch_index_edges, lin
@@ -168,7 +164,7 @@ def compute_ect_edges(
 
 
 def compute_ect_faces(
-    data: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
+    batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor
 ):
     """Computes the Euler Characteristic Transform of a batch of meshes.
 
@@ -182,27 +178,24 @@ def compute_ect_faces(
     lin: torch.FloatTensor
         The discretization of the interval [-1,1] each node height falls in this
         range due to rescaling in normalizing the data.
-    out: torch.FloatTensor
-        The shape of the resulting tensor after summation. It has to be of the
-        shape [num_discretization_steps, batch_size, num_thetas]
     """
     # Compute the node heigths
-    nh = data.x @ v
+    nh = batch.x @ v
 
     # Perform a lookup with the edge indices on node heights, this replaces the
     # node index with its node height and then compute the maximum over the
     # columns to compute the edge height.
-    eh, _ = nh[data.edge_index].max(dim=0)
+    eh, _ = nh[batch.edge_index].max(dim=0)
 
     # Do the same thing for the faces.
-    fh, _ = nh[data.face].max(dim=0)
+    fh, _ = nh[batch.face].max(dim=0)
 
     # Compute which batch an edge belongs to. We take the first index of the
     # edge (or faces) and do a lookup on the batch index of that node in the
     # batch indices of the nodes.
-    batch_index_nodes = data.batch
-    batch_index_edges = data.batch[data.edge_index[0]]
-    batch_index_faces = data.batch[data.face[0]]
+    batch_index_nodes = batch.batch
+    batch_index_edges = batch.batch[batch.edge_index[0]]
+    batch_index_faces = batch.batch[batch.face[0]]
 
     return (
         compute_ecc(nh, batch_index_nodes, lin)
@@ -223,7 +216,8 @@ class ECTLayer(nn.Module):
     ----------
     v: torch.FloatTensor
         The direction vector that contains the directions. The shape of the
-        tensor v is either [ndims, num_thetas] or [n_channels, ndims, num_thetas].
+        tensor v is either [ndims, num_thetas] or [n_channels, ndims,
+        num_thetas].
     config: ECTConfig
         The configuration config of the ECT layer.
 
