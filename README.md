@@ -29,7 +29,7 @@ pip install git+https://github.com/aidos-lab/dect.git
 
 ## Usage
 
-For a demonstrastration of our new ECT computation, we provide the
+For a demonstration of our new ECT computation, we provide the
 `notebooks/01_example_usage.ipynb` file and the code therein provides an intuitive
 example with explanation. The code is provided on an as-is basis; see
 [LICENSE.md](https://github.com/aidos-lab/dect/blob/main/LICENSE.md) for more
