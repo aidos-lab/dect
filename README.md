@@ -9,7 +9,7 @@ Working on the following set of features:
 
 
 # DECT - Differentiable Euler Characteristic Transform
-[![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect) [![Maintainability](https://api.codeclimate.com/v1/badges/82f86d7e2f0aae342055/maintainability)](https://codeclimate.com/github/aidos-lab/dect/maintainability)
+[![arXiv](https://img.shields.io/badge/arXiv-2310.07630-b31b1b.svg)](https://arxiv.org/abs/2310.07630) ![GitHub contributors](https://img.shields.io/github/contributors/aidos-lab/dect) ![GitHub](https://img.shields.io/github/license/aidos-lab/dect) [![Maintainability](https://api.codeclimate.com/v1/badges/82f86d7e2f0aae342055/maintainability)](https://codeclimate.com/github/aidos-lab/dect/maintainability) [![Tests](https://github.com/aidos-lab/dect/actions/workflows/tests.yaml/badge.svg)](https://github.com/aidos-lab/dect/actions/workflows/tests.yaml)
 
 This is the official implementation for the **Differentiable Euler Characteristic
 Transform**, a geometrical-topological method for shape classification. Our
