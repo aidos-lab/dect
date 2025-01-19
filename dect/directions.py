@@ -7,7 +7,7 @@ import itertools
 import torch
 
 
-def generate_uniform_directions(num_thetas: int = 64, d: int = 3):
+def generate_uniform_directions(num_thetas: int, d: int, seed: int, device: str):
     """
     Generate randomly sampled directions from a sphere in d dimensions.
 
@@ -23,8 +23,9 @@ def generate_uniform_directions(num_thetas: int = 64, d: int = 3):
     d: int
         The dimension of the unit sphere. Default is 3 (hence R^3)
     """
-    v = torch.randn(size=(d, num_thetas))
-    v /= v.pow(2).sum(axis=0).sqrt().unsqueeze(1)
+    g = torch.Generator(device=device).manual_seed(seed)
+    v = torch.randn(size=(d, num_thetas), device=device, generator=g)
+    v /= v.pow(2).sum(axis=0).sqrt()
     return v
 
 

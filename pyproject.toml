@@ -1,33 +1,26 @@
-[build-system]
-requires = ["setuptools >= 61.0"]
-build-backend = "setuptools.build_meta"
-
-
-[tool.setuptools]
-packages = ["dect"]
-
-[project]
+[tool.poetry]
 name = "dect"
-version = "0.0.0"
-dependencies = [
-    "torch-scatter",
-    "torch",
-    "geotorch"
+version = "0.1.0"
+description = "A fast package to compute the Euler Characteristic Transform"
+authors = [
+    "Ernst Röell <ernst.roeell@helmholtz-munich.de>",
+    "Bastian Rieck <bastian.grossenbacher@unifr.ch>",
+]
+maintainers = ["Ernst Röell <ernst.roeell@helmholtz-munich.de>"]
+readme = "README.md"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
 ]
 
-requires-python = ">=3.10"
-authors = [
-  {name = "Ernst Röell", email = "ernst.roeell@helmholtz-munich.de"},
-  {name = "Bastian Rieck", email = "bastian.rieck@helmholtz-munich.de"},
-]
-maintainers = [
-  {name = "Ernst Röell", email = "ernst.roeell@helmholtz-munich.de"},
-]
-description = "A fast package to compute the Euler Characteristic Transform"
-readme = "README.md"
-license = {file = "LICENSE.md"}
-keywords = ["euler", "characteristic", "topology", "tda", "transform"]
-classifiers = [
-  "Development Status :: 4 - Beta",
-  "Programming Language :: Python"
-]
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "^2.5.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
