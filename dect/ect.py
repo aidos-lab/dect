@@ -2,6 +2,15 @@
 This the functional (in the programming sense) implementation of the Euler
 Characteristic Transform. Only contains core functions, without the torch or
 torch geometric modules.
+
+Current implementations, except the calculation of the ECT for point clouds, 
+are naive implementations and have rather large memory requirements since the 
+ECT of each simplex individually. 
+
+Accelerating the implementation for the differentiable case is an active part of 
+research. The non-differentiable case is easily scalable to medium large simplicial 
+complexes.
+
 """
 
 from typing import TypeAlias
@@ -102,27 +111,6 @@ def compute_ect(
     # Returns the ect as [batch_len, num_thetas, resolution]
     return output.movedim(0, 1).movedim(-1, -2)
 
-    # # Calculate output shape.
-    # # Number of batches in the index tensor.
-
-    # out_shape = (num_thetas, batch_len, resolution)
-
-    # # Initalize the output shape for the index add.
-    # output = torch.zeros(size=out_shape)
-
-    # lin = torch.linspace(
-    #     start=-radius, end=radius, steps=resolution, device=x.device
-    # ).view(-1, 1, 1)
-    # nh = x @ v
-    # print(nh.shape)
-    # print(simplices)
-    # for simplex in simplices:
-    #     print(simplex)
-
-    # ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
-
-    # return torch.index_add(output, 1, index, ecc).movedim(0, 1)
-
 
 def compute_ect_point_cloud(
     x: Tensor,
@@ -132,7 +120,9 @@ def compute_ect_point_cloud(
     scale: float,
 ) -> Tensor:
     """
-    Computes the ECT of a point cloud.
+    Computes the ECT of a point cloud. Assumes the point clouds are batched and
+    of the same cardinality. The shape is assumed to be of the form [B,N,D], the
+    first dimension forms the index vector.
 
     Parameters
     ----------
@@ -166,88 +156,171 @@ def compute_ect_point_cloud(
     return ect
 
 
-def compute_ect_graph(
+def compute_ecc(nh, index, lin, scale):
+    """
+    Computes the ECC of a set of points given the node heights.
+    """
+    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
+    out = torch.zeros(
+        size=(
+            ecc.shape[0],
+            index.max().item() + 1,
+            ecc.shape[2],
+        ),
+        device=nh.device,
+    )
+    return torch.index_add(out, 1, index, ecc).movedim(0, 1)
+
+
+def compute_ect_edges(
     x: Tensor,
+    edge_index: Tensor,
     v: Tensor,
     radius: float,
     resolution: int,
     scale: float,
-) -> Tensor:
-    """
-    Computes the ECT of a point cloud.
+    index: Tensor | None = None,
+):
+    """Computes the Euler Characteristic Transform of a batch of graphs.
 
     Parameters
     ----------
-    x : Tensor
-        The point cloud of shape [B,N,D] where B is the number of point clouds,
-        N is the number of points and D is the ambient dimension.
-    v : Tensor
-        The tensor of directions of shape [D,N], where D is the ambient
-        dimension and N is the number of directions.
-    radius : float
-        Radius of the interval to discretize the ECT into. (Is irrelevant for
-        this experiment.)
-    resolution : int
-        Number of steps to divide the lin interval into.
-    scale : Tensor
-        The multipicative factor for the sigmoid function.
-
-    Returns
-    -------
-    Tensor
-        The ECT of the point cloud of shape [B,N,R] where B is the number of
-        point clouds (thus ECT's), N is the number of direction and R is the
-        resolution.
+    batch : Batch
+        A batch of data containing the node coordinates, the edges and batch
+        index.
+    v: torch.FloatTensor
+        The direction vector that contains the directions.
+    lin: torch.FloatTensor
+        The discretization of the interval [-1,1] each node height falls in this
+        range due to rescaling in normalizing the data.
     """
-    lin = torch.linspace(
-        start=-radius, end=radius, steps=resolution, device=x.device
-    ).view(-1, 1, 1)
-    nh = (x @ v).unsqueeze(1)
+
+    # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
+    if index is not None:
+        batch_len = index.max() + 1
+    else:
+        batch_len = 1
+        index = torch.zeros(size=(len(x),), dtype=torch.int32)
+
+    # v is of shape [d, num_thetas]
+    num_thetas = v.shape[1]
+
+    out_shape = (resolution, batch_len, num_thetas)
+
+    # Node heights have shape [num_points, num_directions]
+    nh = x @ v
+    lin = torch.linspace(-radius, radius, resolution).view(-1, 1, 1)
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
-    ect = torch.sum(ecc, dim=2)
-    return ect
+    output = torch.zeros(
+        size=out_shape,
+        device=nh.device,
+    )
+
+    output.index_add_(1, index, ecc)
+
+    # For the calculation of the edges, loop over the simplex tensors.
+    # Each index tensor is assumed to be of shape [d,num_simplices],
+    # where d is the dimension of the simplex.
+
+    # Edges heights.
+    sh, _ = nh[edge_index].max(dim=0)
+
+    # Compute which batch an edge belongs to. We take the first index of the
+    # edge (or faces) and do a lookup on the batch index of that node in the
+    # batch indices of the nodes.
+    index_simplex = index[edge_index[0]]
+
+    # Calculate the ECC of the simplices.
+    secc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, sh))
+
+    # Add the ECC of the simplices to the running total.
+    output.index_add_(1, index_simplex, secc)
+
+    # Returns the ect as [batch_len, num_thetas, resolution]
+    return output.movedim(0, 1).movedim(-1, -2)
 
 
 def compute_ect_mesh(
     x: Tensor,
+    edge_index: Tensor,
+    face_index: Tensor,
     v: Tensor,
     radius: float,
     resolution: int,
     scale: float,
-) -> Tensor:
-    """
-    Computes the ECT of a point cloud.
+    index: Tensor | None = None,
+):
+    """Computes the Euler Characteristic Transform of a batch of graphs.
 
     Parameters
     ----------
-    x : Tensor
-        The point cloud of shape [B,N,D] where B is the number of point clouds,
-        N is the number of points and D is the ambient dimension.
-    v : Tensor
-        The tensor of directions of shape [D,N], where D is the ambient
-        dimension and N is the number of directions.
-    radius : float
-        Radius of the interval to discretize the ECT into. (Is irrelevant for
-        this experiment.)
-    resolution : int
-        Number of steps to divide the lin interval into.
-    scale : Tensor
-        The multipicative factor for the sigmoid function.
-
-    Returns
-    -------
-    Tensor
-        The ECT of the point cloud of shape [B,N,R] where B is the number of
-        point clouds (thus ECT's), N is the number of direction and R is the
-        resolution.
+    batch : Batch
+        A batch of data containing the node coordinates, the edges and batch
+        index.
+    v: torch.FloatTensor
+        The direction vector that contains the directions.
+    lin: torch.FloatTensor
+        The discretization of the interval [-1,1] each node height falls in this
+        range due to rescaling in normalizing the data.
     """
-    lin = torch.linspace(
-        start=-radius, end=radius, steps=resolution, device=x.device
-    ).view(-1, 1, 1)
-    nh = (x @ v).unsqueeze(1)
+
+    # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
+    if index is not None:
+        batch_len = index.max() + 1
+    else:
+        batch_len = 1
+        index = torch.zeros(size=(len(x),), dtype=torch.int32)
+
+    # v is of shape [d, num_thetas]
+    num_thetas = v.shape[1]
+
+    out_shape = (resolution, batch_len, num_thetas)
+
+    # Node heights have shape [num_points, num_directions]
+    nh = x @ v
+    lin = torch.linspace(-radius, radius, resolution).view(-1, 1, 1)
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
-    ect = torch.sum(ecc, dim=2)
-    return ect
+    output = torch.zeros(
+        size=out_shape,
+        device=nh.device,
+    )
+
+    output.index_add_(1, index, ecc)
+
+    # For the calculation of the edges, loop over the simplex tensors.
+    # Each index tensor is assumed to be of shape [d,num_simplices],
+    # where d is the dimension of the simplex.
+
+    # Edges heights.
+    eh, _ = nh[edge_index].max(dim=0)
+
+    # Compute which batch an edge belongs to. We take the first index of the
+    # edge (or faces) and do a lookup on the batch index of that node in the
+    # batch indices of the nodes.
+    index_simplex = index[edge_index[0]]
+
+    # Calculate the ECC of the simplices.
+    edges_ecc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, eh))
+
+    # Add the ECC of the simplices to the running total.
+    output.index_add_(1, index_simplex, edges_ecc)
+
+    # Faces heights.
+    fh, _ = nh[face_index].max(dim=0)
+
+    # Compute which batch an edge belongs to. We take the first index of the
+    # edge (or faces) and do a lookup on the batch index of that node in the
+    # batch indices of the nodes.
+    index_simplex = index[face_index[0]]
+
+    # Calculate the ECC of the simplices.
+    faces_ecc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, eh))
+
+    # Add the ECC of the simplices to the running total.
+    output.index_add_(1, index_simplex, faces_ecc)
+
+    # Returns the ect as [batch_len, num_thetas, resolution]
+    return output.movedim(0, 1).movedim(-1, -2)
 
 
 # ---------------------------------------------------------------------------- #

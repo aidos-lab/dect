@@ -1,6 +1,7 @@
 # Vscode 
 /.vscode 
 /archive
+scratch* 
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

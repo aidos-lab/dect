@@ -22,6 +22,7 @@ torch = "^2.5.1"
 pytest = "^8.3.4"
 matplotlib = "^3.10.0"
 pytest-cov = "^6.0.0"
+ipykernel = "^6.29.5"
 
 
 [tool.poetry.group.test.dependencies]
