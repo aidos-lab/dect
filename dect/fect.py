@@ -13,10 +13,11 @@ Type casting to the right types in torch is non-ideal, leading to a non-memory
 optimized algorithm with much higher memory needs than needed. Case in point,
 torch scatter needs int64 for the index vector, while in practice uint32
 suffices, a factor of four. The index vector is of large size [2,1e6,1024] for
-edges and [simplex_dim,num_nodes,num_directions] in general so this causes an
-OOM at some point.
+edges and [simplex_dim,num_nodes,num_directions] in general so this causes
+unnecessary OOM errors.
 
-Important, no guards for overflow errors and no differentiability. 
+Important, no guards for overflows (it happens silently) and no
+differentiability. 
 """
 
 import torch
