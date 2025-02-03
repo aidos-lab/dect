@@ -6,9 +6,23 @@ import torch
 Tensor: TypeAlias = torch.Tensor
 
 
-def indicator(ecc: Tensor) -> Tensor:
+def indicator(ecc: Tensor)  -> Tensor:
     """
     Indicator function for the calculation of the ect.
+
+    Args:
+        ecc (Tensor):
+            The height values.
+
+    Returns:
+        Tensor: The ECC.
+    """
+    return torch.heaviside(ecc, torch.tensor([0.0]))
+
+
+def scaled_sigmoid(ecc: Tensor) -> Tensor:
+    """
+    Sigmoid function for the calculation of the ect.
 
     Args:
         ecc (Tensor):
@@ -17,4 +31,4 @@ def indicator(ecc: Tensor) -> Tensor:
     Returns:
         Tensor: The ECC.
     """
-    return torch.heaviside(ecc, torch.tensor([0.0]))
+    return torch.sigmoid(ecc)

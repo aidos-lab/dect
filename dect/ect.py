@@ -5,7 +5,10 @@ torch geometric modules.
 
 Current implementations, except the calculation of the ECT for point clouds, 
 are naive implementations and have rather large memory requirements since the 
-ECT of each simplex individually. 
+ECT of each simplex is calculated individually. 
+
+For an fast implementation of the ECT please look at the `fect.py`, which for 
+graphs handles large graphs at high resolution. 
 
 Accelerating the implementation for the differentiable case is an active part of 
 research. The non-differentiable case is easily scalable to medium large simplicial 
@@ -13,7 +16,9 @@ complexes.
 """
 
 from typing import Callable, TypeAlias
+
 import torch
+from dect.ect_fn import indicator
 
 Tensor: TypeAlias = torch.Tensor
 
@@ -31,7 +36,7 @@ def compute_ect(
     resolution: int,
     scale: float,
     index: Tensor | None = None,
-    ect_fn: Callable[..., Tensor] = torch.nn.functional.sigmoid
+    ect_fn: Callable[..., Tensor] = indicator,
 ) -> Tensor:
     """
     NOTE: Under Active development. Not fully tested yet.
@@ -72,7 +77,7 @@ def compute_ect(
 
     # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
     if index is not None:
-        batch_len = index.max() + 1
+        batch_len = int(index.max() + 1)
     else:
         batch_len = 1
         index = torch.zeros(size=(len(x),), dtype=torch.int32)
@@ -86,6 +91,7 @@ def compute_ect(
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution).view(-1, 1, 1)
     ecc = ect_fn(scale * torch.sub(lin, nh))
+
     output = torch.zeros(
         size=out_shape,
         device=nh.device,
@@ -158,23 +164,6 @@ def compute_ect_point_cloud(
     ect = torch.sum(ecc, dim=2)
     return ect
 
-
-def compute_ecc(nh, index, lin, scale):
-    """
-    Computes the ECC of a set of points given the node heights.
-    """
-    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
-    out = torch.zeros(
-        size=(
-            ecc.shape[0],
-            index.max().item() + 1,
-            ecc.shape[2],
-        ),
-        device=nh.device,
-    )
-    return torch.index_add(out, 1, index, ecc).movedim(0, 1)
-
-
 def compute_ect_edges(
     x: Tensor,
     edge_index: Tensor,
@@ -200,7 +189,7 @@ def compute_ect_edges(
 
     # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
     if index is not None:
-        batch_len = index.max() + 1
+        batch_len = int(index.max() + 1)
     else:
         batch_len = 1
         index = torch.zeros(size=(len(x),), dtype=torch.int32)
@@ -269,7 +258,7 @@ def compute_ect_mesh(
 
     # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
     if index is not None:
-        batch_len = index.max() + 1
+        batch_len = int(index.max() + 1)
     else:
         batch_len = 1
         index = torch.zeros(size=(len(x),), dtype=torch.int32)
@@ -317,7 +306,7 @@ def compute_ect_mesh(
     index_simplex = index[face_index[0]]
 
     # Calculate the ECC of the simplices.
-    faces_ecc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, eh))
+    faces_ecc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, fh))
 
     # Add the ECC of the simplices to the running total.
     output.index_add_(1, index_simplex, faces_ecc)
