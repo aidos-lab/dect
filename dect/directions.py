@@ -1,6 +1,5 @@
 """
-Helper function to generate a structured set of directions in 2 and 3
-dimensions.
+Functions to initialize directions in 2, 3 and $n$ dimensions.
 """
 
 import itertools
@@ -11,10 +10,9 @@ def generate_uniform_directions(num_thetas: int, d: int, seed: int, device: str)
     """
     Generate randomly sampled directions from a sphere in d dimensions.
 
-    First a standard gaussian centered at 0 with standard deviation 1 is sampled
-    and then projected onto the unit sphere. This yields a uniformly sampled set
-    of points on the unit spere. Please note that the generated shapes with have
-    shape [d, num_thetas].
+    A standard normal is sampled and projected onto the unit sphere to 
+    yield a randomly sampled set of points on the unit spere. Please 
+    note that the generated tensor has shape [d, num_thetas].
 
     Parameters
     ----------
@@ -29,10 +27,8 @@ def generate_uniform_directions(num_thetas: int, d: int, seed: int, device: str)
     return v
 
 
-def generate_uniform_2d_directions(num_thetas: int = 64):
+def generate_2d_directions(num_thetas: int = 64):
     """
-    Generate uniformly sampled directions on the unit circle in two dimensions.
-
     Provides a structured set of directions in two dimensions. First the
     interval [0,2*pi] is devided into a regular grid and the corresponding
     angles on the unit circle calculated.
@@ -41,9 +37,15 @@ def generate_uniform_2d_directions(num_thetas: int = 64):
     ----------
     num_thetas: int
         The number of directions to generate.
-    d: int
-        The dimension of the unit sphere. Default is 3 (hence R^3)
+
+    Returns
+    ----------
+    v: Tensor
+        Tensor of shape [2,num_thetas] containing the directions where each
+        column is one direction in 2D.
+        The directions start at $\theta=0$ and runs to $\theta = 2 * \pi$.
     """
+
     v = torch.vstack(
         [
             torch.sin(torch.linspace(0, 2 * torch.pi, num_thetas)),
@@ -56,6 +58,8 @@ def generate_uniform_2d_directions(num_thetas: int = 64):
 
 def generate_multiview_directions(num_thetas: int, d: int):
     """
+    NOTE: Partially depreciated.
+
     Generates multiple sets of structured directions in n dimensions.
 
     We generate sets of directions by embedding the 2d unit circle in d
