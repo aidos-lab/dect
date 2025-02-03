@@ -43,7 +43,7 @@ def generate_2d_directions(num_thetas: int = 64):
     v: Tensor
         Tensor of shape [2,num_thetas] containing the directions where each
         column is one direction in 2D.
-        The directions start at $\theta=0$ and runs to $\theta = 2 * \pi$.
+        The directions start at $theta=0$ and runs to $theta = 2 * pi$.
     """
 
     v = torch.vstack(
