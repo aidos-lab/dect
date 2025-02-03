@@ -1,21 +1,27 @@
 """
-Implementation of the ECT with learnable parameters. 
+Implementation of the ECT with learnable parameters.
 TODO: Needs implementation and refactoring.
 
 """
 
+from typing import TypeAlias, Literal
 from dataclasses import dataclass
+
 import torch
 from torch import nn
 
 
+Tensor: TypeAlias = torch.Tensor
+"""@private"""
+
+
 @dataclass
-class EctBatch(Batch):
+class EctBatch:
     x: Tensor | None = None
     ect: Tensor | None = None
 
 
-class EctConfig(BaseModel):
+class EctConfig:
     """
     Config for initializing an ect layer.
     """

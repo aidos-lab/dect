@@ -28,17 +28,20 @@ import torch
 
 
 def bincount(idx, resolution):
+    """Calculates the histogram in resolution bins."""
     x = torch.zeros(size=(resolution, resolution), dtype=torch.int16)
     return x.scatter_(0, idx.to(torch.int64), 1, reduce="add")
 
 
 def fast_ect(x, v):
+    """Fast ECT for point clouds."""
     resolution = v.shape[1]
     nh = ((torch.matmul(x, v) + 1) * (resolution // 2)).to(torch.uint16)
     return bincount(nh, resolution)
 
 
 def fast_ect_edges(x, ei, v):
+    """Fast ECT for edges."""
     resolution = v.shape[1]
     nh = ((torch.matmul(x, v) + 1) * (resolution // 2)).to(torch.int32)
     eh = nh[ei].max(axis=0)[0]

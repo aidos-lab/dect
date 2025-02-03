@@ -21,6 +21,7 @@ import torch
 from dect.ect_fn import indicator
 
 Tensor: TypeAlias = torch.Tensor
+"""@private"""
 
 
 def normalize(ect):

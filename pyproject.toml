@@ -16,6 +16,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.10"
 torch = "^2.5.1"
+pdoc = "^15.0.1"
 
 
 [tool.poetry.group.dev.dependencies]

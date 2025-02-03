@@ -4,6 +4,7 @@ from typing import TypeAlias
 import torch
 
 Tensor: TypeAlias = torch.Tensor
+"""@private"""
 
 
 def indicator(ecc: Tensor)  -> Tensor:
