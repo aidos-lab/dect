@@ -3,15 +3,15 @@ This the functional (in the programming sense) implementation of the Euler
 Characteristic Transform. Only contains core functions, without the torch or
 torch geometric modules.
 
-Current implementations, except the calculation of the ECT for point clouds, 
-are naive implementations and have rather large memory requirements since the 
-ECT of each simplex is calculated individually. 
+Current implementations, except the calculation of the ECT for point clouds,
+are naive implementations and have rather large memory requirements since the
+ECT of each simplex is calculated individually.
 
-For an fast implementation of the ECT please look at the `fect.py`, which for 
-graphs handles large graphs at high resolution. 
+For an fast implementation of the ECT please look at the `fect.py`, which for
+graphs handles large graphs at high resolution.
 
-Accelerating the implementation for the differentiable case is an active part of 
-research. The non-differentiable case is easily scalable to medium large simplicial 
+Accelerating the implementation for the differentiable case is an active part of
+research. The non-differentiable case is easily scalable to medium large simplicial
 complexes.
 """
 
@@ -40,7 +40,7 @@ def compute_ect(
     ect_fn: Callable[..., Tensor] = indicator,
 ) -> Tensor:
     """
-    NOTE: Under Active development. Not fully tested yet.
+    NOTE: Under Active development.
 
     Computes the Euler Characteristic Transform of an arbitrary Simplicial
     Complex. This is the most general, but least optimized which is great for
@@ -128,6 +128,7 @@ def compute_ect_point_cloud(
     radius: float,
     resolution: int,
     scale: float,
+    normalize: bool = False,
 ) -> Tensor:
     """
     Computes the ECT of a point cloud. Assumes the point clouds are batched and
@@ -149,6 +150,8 @@ def compute_ect_point_cloud(
         Number of steps to divide the lin interval into.
     scale : Tensor
         The multipicative factor for the sigmoid function.
+    normalize : bool
+        Rescale the pixel values to the interval [0,1]. Default is False.
 
     Returns
     -------
@@ -163,7 +166,11 @@ def compute_ect_point_cloud(
     nh = (x @ v).unsqueeze(1)
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     ect = torch.sum(ecc, dim=2)
+    if normalize:
+        ect = ect / torch.amax(ect, dim=(-1, -2), keepdim=True)
+
     return ect
+
 
 def compute_ect_edges(
     x: Tensor,
