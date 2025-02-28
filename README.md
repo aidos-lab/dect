@@ -19,48 +19,23 @@ yielding a blazingly fast implementation for machine learning research with
 
 <img src="https://github.com/aidos-lab/dect/blob/main/figures/ect_animation.gif?raw=true" width="100%">
 
-If you find our work useful, please consider using the following citation:
-
-```bibtex
-@inproceedings{Roell24a,
-  title         = {Differentiable Euler Characteristic Transforms for Shape Classification},
-  author        = {Ernst R{\"o}ell and Bastian Rieck},
-  year          = 2024,
-  booktitle     = {International Conference on Learning Representations},
-  eprint        = {2310.07630},
-  archiveprefix = {arXiv},
-  primaryclass  = {cs.LG},
-  repository    = {https://github.com/aidos-lab/dect-evaluation},
-  url           = {https://openreview.net/forum?id=MO632iPq3I},
-}
-```
 
 ## Installation
 
 For the installation we require an up-to-date installation of PyTorch, either
-with or without CUDA support. The DECT implementation also relies on the
-`torch-scatter` package, highly optimized for grouped operations such summing 
-of a vector given an index vector. 
+with or without CUDA support. Our package can be installed with either 
+pip or added as a git submodule.
 
-- First install `torch` and `torch-scatter`.
+Installation as a git submodule can be done as follows. 
+```sh
+git submodule add https://github.com/aidos-lab/dect.git
+```
 
-   ```python
-   pip install torch==2.2.0 --index-url https://download.pytorch.org/whl/cu117
-   pip install torch-scatter -f https://data.pyg.org/whl/torch-2.2.0+${CUDA}.html
-   ```
-
-- Then install our package in either one of two ways:
-   - As a git submodule 
-
-   ```sh
-   git submodule add https://github.com/aidos-lab/dect.git
-   ```
-
-   - Or as a pip installable package. 
+Or use pip to install the git repository.
    
-   ```sh
-   pip install git+https://github.com/aidos-lab/dect.git
-   ```
+```sh
+pip install git+https://github.com/aidos-lab/dect.git
+```
 
 ## Usage
 
@@ -72,26 +47,34 @@ information. You are cordially invited to both contribute and provide feedback.
 Do not hesitate to contact us!
 
 ```python
-import torch
-from torch_geometric.data import Data, Batch
-from dect.ect import ECTConfig, ECTLayer
-from dect.directions import generate_uniform_2d_directions
+import torch 
+from dect.directions import generate_uniform_2d_directions 
+from dect.ect import compute_ect
+from dect.ect_fn import scaled_sigmoid 
 
+# Added for visualization.
+import matplotlib.pyplot as plt
 
+# Basic dataset with three points,three edges and one face.
+points_coordinates = torch.tensor([[0.5, 0.0], [-0.5, 0.0], [0.5, 0.5]])
+
+# Generate a set of structured directions along the unit circle.
 v = generate_uniform_2d_directions(num_thetas=64)
 
-layer = ECTLayer(ECTConfig(), v=v)
-
-points_coordinates = torch.tensor(
-    [[0.5, 0.0], [-0.5, 0.0], [0.5, 0.5]], requires_grad=True
+# Compute the ECT.
+ect = compute_ect(
+    points_coordinates, 
+    v=v,
+    radius=1,
+    resolution=64,
+    scale=500,
+    ect_fn=scaled_sigmoid
 )
 
-data = Data(x=points_coordinates)
-batch = Batch.from_data_list([data])
-
-ect = layer(batch)
+# Visualize as an image.
+plt.imshow(ect.detach().squeeze().numpy().T)
+plt.show()
 ```
-
 
 ## License
 
@@ -159,3 +142,22 @@ basic roadmap:
 
 If you need any help or have questions, feel free to reach out to the authors or
 submit a pull request. We appreciate your contributions and are happy to assist!
+
+## Citation
+
+If you find our work useful, please consider using the following citation:
+
+```bibtex
+@inproceedings{Roell24a,
+  title         = {Differentiable Euler Characteristic Transforms for Shape Classification},
+  author        = {Ernst R{\"o}ell and Bastian Rieck},
+  year          = 2024,
+  booktitle     = {International Conference on Learning Representations},
+  eprint        = {2310.07630},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.LG},
+  repository    = {https://github.com/aidos-lab/dect-evaluation},
+  url           = {https://openreview.net/forum?id=MO632iPq3I},
+}
+```
+

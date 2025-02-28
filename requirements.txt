@@ -1,3 +1,0 @@
-torch
-torch-scatter
-geotorch
