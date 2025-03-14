@@ -14,8 +14,8 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-torch = "^2.5.1"
+python = "^3.10.12"
+torch = ">2.0.0"
 pdoc = "^15.0.1"
 
 
