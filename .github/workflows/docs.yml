@@ -3,9 +3,8 @@ name: website
 # build the documentation whenever there are new commits on main
 on:
   push:
-    # Alternative: only build for tags.
-    tags:
-      - '*'
+    branches:
+      - main
 
 # security: restrict permissions for CI jobs.
 permissions:

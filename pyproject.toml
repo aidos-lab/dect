@@ -30,6 +30,7 @@ ipykernel = "^6.29.5"
 pytest-cov = "^6.0.0"
 pytest = "^8.3.4"
 
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

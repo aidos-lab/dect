@@ -18,6 +18,7 @@ complexes.
 from typing import Callable, TypeAlias
 
 import torch
+
 from dect.ect_fn import indicator
 
 Tensor: TypeAlias = torch.Tensor
