@@ -332,7 +332,7 @@ def compute_ect_mesh(
     index_simplex = index[face_index[0]]
 
     # Calculate the ECC of the simplices.
-    faces_ecc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, fh))
+    faces_ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, fh))
 
     # Add the ECC of the simplices to the running total.
     output.index_add_(1, index_simplex, faces_ecc)
