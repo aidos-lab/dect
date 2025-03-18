@@ -186,24 +186,32 @@ def compute_ect_edges(
 
     Parameters
     ----------
-    batch : Batch
-        A batch of data containing the node coordinates, the edges and batch
-        index.
-    v: torch.FloatTensor
-        The direction vector that contains the directions.
-    lin: torch.FloatTensor
-        The discretization of the interval [-1,1] each node height falls in this
-        range due to rescaling in normalizing the data.
+    x : Tensor
+        The point cloud of shape [B,N,D] where B is the number of point clouds,
+        N is the number of points and D is the ambient dimension.
+    edge_index : Tensor 
+        The edge index tensor in torch geometric format, has to have shape 
+        [2,num_edges]. Be careful when using undirected graphs, since torch 
+        geometric views undirected graphs as 2 directed edges, leading to 
+        double counts. 
+    v : Tensor
+        The tensor of directions of shape [D,N], where D is the ambient
+        dimension and N is the number of directions.
+    radius : float
+        Radius of the interval to discretize the ECT into.
+    resolution : int
+        Number of steps to divide the lin interval into.
+    scale : Tensor
+        The multipicative factor for the sigmoid function.
     """
 
-    # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
     if index is not None:
         batch_len = int(index.max() + 1)
     else:
         batch_len = 1
         index = torch.zeros(size=(len(x),), dtype=torch.int32)
 
-    # v is of shape [d, num_thetas]
+    # v is of shape [ambient_dimension, num_thetas]
     num_thetas = v.shape[1]
 
     out_shape = (resolution, batch_len, num_thetas)
@@ -219,10 +227,6 @@ def compute_ect_edges(
 
     output.index_add_(1, index, ecc)
 
-    # For the calculation of the edges, loop over the simplex tensors.
-    # Each index tensor is assumed to be of shape [d,num_simplices],
-    # where d is the dimension of the simplex.
-
     # Edges heights.
     sh, _ = nh[edge_index].max(dim=0)
 
@@ -231,7 +235,7 @@ def compute_ect_edges(
     # batch indices of the nodes.
     index_simplex = index[edge_index[0]]
 
-    # Calculate the ECC of the simplices.
+    # Calculate the ECC of the edges.
     secc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, sh))
 
     # Add the ECC of the simplices to the running total.
@@ -255,14 +259,27 @@ def compute_ect_mesh(
 
     Parameters
     ----------
-    batch : Batch
-        A batch of data containing the node coordinates, the edges and batch
-        index.
-    v: torch.FloatTensor
-        The direction vector that contains the directions.
-    lin: torch.FloatTensor
-        The discretization of the interval [-1,1] each node height falls in this
-        range due to rescaling in normalizing the data.
+    x : Tensor
+        The point cloud of shape [B,N,D] where B is the number of point clouds,
+        N is the number of points and D is the ambient dimension.
+    edge_index : Tensor 
+        The edge index tensor in torch geometric format, has to have shape 
+        [2,num_edges]. Be careful when using undirected graphs, since torch 
+        geometric views undirected graphs as 2 directed edges, leading to 
+        double counts. 
+    face_index : Tensor 
+        The face index tensor of shape [3,num_faces]. Each column is a face 
+        where a face is a triple of indices referencing to the rows of the 
+        x tensor with coordinates. 
+    v : Tensor
+        The tensor of directions of shape [D,N], where D is the ambient
+        dimension and N is the number of directions.
+    radius : float
+        Radius of the interval to discretize the ECT into.
+    resolution : int
+        Number of steps to divide the lin interval into.
+    scale : Tensor
+        The multipicative factor for the sigmoid function.
     """
 
     # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
