@@ -48,7 +48,7 @@ Do not hesitate to contact us!
 
 ```python
 import torch 
-from dect.directions import generate_uniform_2d_directions 
+from dect.directions import generate_2d_directions 
 from dect.ect import compute_ect
 from dect.ect_fn import scaled_sigmoid 
 
@@ -59,7 +59,7 @@ import matplotlib.pyplot as plt
 points_coordinates = torch.tensor([[0.5, 0.0], [-0.5, 0.0], [0.5, 0.5]])
 
 # Generate a set of structured directions along the unit circle.
-v = generate_uniform_2d_directions(num_thetas=64)
+v = generate_2d_directions(num_thetas=64)
 
 # Compute the ECT.
 ect = compute_ect(
