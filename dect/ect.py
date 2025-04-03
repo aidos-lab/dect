@@ -173,6 +173,63 @@ def compute_ect_point_cloud(
     return ect
 
 
+def compute_ect_points(
+    x: Tensor,
+    v: Tensor,
+    radius: float,
+    resolution: int,
+    scale: float,
+    index: Tensor | None = None,
+):
+    """Computes the Euler Characteristic Transform of a batch of graphs.
+
+    Parameters
+    ----------
+    x : Tensor
+        The point cloud of shape [B,N,D] where B is the number of point clouds,
+        N is the number of points and D is the ambient dimension.
+    edge_index : Tensor
+        The edge index tensor in torch geometric format, has to have shape
+        [2,num_edges]. Be careful when using undirected graphs, since torch
+        geometric views undirected graphs as 2 directed edges, leading to
+        double counts.
+    v : Tensor
+        The tensor of directions of shape [D,N], where D is the ambient
+        dimension and N is the number of directions.
+    radius : float
+        Radius of the interval to discretize the ECT into.
+    resolution : int
+        Number of steps to divide the lin interval into.
+    scale : Tensor
+        The multipicative factor for the sigmoid function.
+    """
+
+    if index is not None:
+        batch_len = int(index.max() + 1)
+    else:
+        batch_len = 1
+        index = torch.zeros(size=(len(x),), dtype=torch.int32)
+
+    # v is of shape [ambient_dimension, num_thetas]
+    num_thetas = v.shape[1]
+
+    out_shape = (resolution, batch_len, num_thetas)
+
+    # Node heights have shape [num_points, num_directions]
+    nh = x @ v
+    lin = torch.linspace(-radius, radius, resolution).view(-1, 1, 1)
+    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
+    output = torch.zeros(
+        size=out_shape,
+        device=nh.device,
+    )
+
+    output.index_add_(1, index, ecc)
+
+    # Returns the ect as [batch_len, num_thetas, resolution]
+    return output.movedim(0, 1)
+
+
 def compute_ect_edges(
     x: Tensor,
     edge_index: Tensor,
@@ -189,11 +246,11 @@ def compute_ect_edges(
     x : Tensor
         The point cloud of shape [B,N,D] where B is the number of point clouds,
         N is the number of points and D is the ambient dimension.
-    edge_index : Tensor 
-        The edge index tensor in torch geometric format, has to have shape 
-        [2,num_edges]. Be careful when using undirected graphs, since torch 
-        geometric views undirected graphs as 2 directed edges, leading to 
-        double counts. 
+    edge_index : Tensor
+        The edge index tensor in torch geometric format, has to have shape
+        [2,num_edges]. Be careful when using undirected graphs, since torch
+        geometric views undirected graphs as 2 directed edges, leading to
+        double counts.
     v : Tensor
         The tensor of directions of shape [D,N], where D is the ambient
         dimension and N is the number of directions.
@@ -262,15 +319,15 @@ def compute_ect_mesh(
     x : Tensor
         The point cloud of shape [B,N,D] where B is the number of point clouds,
         N is the number of points and D is the ambient dimension.
-    edge_index : Tensor 
-        The edge index tensor in torch geometric format, has to have shape 
-        [2,num_edges]. Be careful when using undirected graphs, since torch 
-        geometric views undirected graphs as 2 directed edges, leading to 
-        double counts. 
-    face_index : Tensor 
-        The face index tensor of shape [3,num_faces]. Each column is a face 
-        where a face is a triple of indices referencing to the rows of the 
-        x tensor with coordinates. 
+    edge_index : Tensor
+        The edge index tensor in torch geometric format, has to have shape
+        [2,num_edges]. Be careful when using undirected graphs, since torch
+        geometric views undirected graphs as 2 directed edges, leading to
+        double counts.
+    face_index : Tensor
+        The face index tensor of shape [3,num_faces]. Each column is a face
+        where a face is a triple of indices referencing to the rows of the
+        x tensor with coordinates.
     v : Tensor
         The tensor of directions of shape [D,N], where D is the ambient
         dimension and N is the number of directions.

@@ -1,7 +1,9 @@
 """
-Implementation of the ECT with learnable parameters.
+NOTE: Under construction.
 TODO: Needs implementation and refactoring.
 
+
+Implementation of the ECT with learnable parameters.
 """
 
 from typing import TypeAlias, Literal
@@ -9,7 +11,13 @@ from dataclasses import dataclass
 
 import torch
 from torch import nn
-
+import geotorch
+from dect.ect import (
+    compute_ect_points,
+    compute_ect_edges,
+    compute_ect_mesh,
+)
+from dect.ect_fn import scaled_sigmoid
 
 Tensor: TypeAlias = torch.Tensor
 """@private"""
@@ -44,11 +52,12 @@ class EctConfig:
 @dataclass(frozen=True)
 class ECTConfig:
     """
+    TODO: Update Description. Outdated.
     Configuration of the ECT Layer.
 
     Parameters
     ----------
-    bump_steps : int
+    resolution : int
         The number of steps to discretize the ECT into.
     radius : float
         The radius of the circle the directions lie on. Usually this is a bit
@@ -66,7 +75,8 @@ class ECTConfig:
         directions. See notebooks for examples.
     """
 
-    bump_steps: int = 32
+    resolution: int = 32
+    scale: float = 8
     radius: float = 1.1
     ect_type: str = "points"
     normalized: bool = False
@@ -106,130 +116,6 @@ class Batch:
     node_weights: torch.FloatTensor | None = None
 
 
-def compute_ecc(
-    nh: torch.FloatTensor,
-    index: torch.LongTensor,
-    lin: torch.FloatTensor,
-    scale: float = 100,
-) -> torch.FloatTensor:
-    """Computes the Euler Characteristic Curve.
-
-    Parameters
-    ----------
-    nh : torch.FloatTensor
-        The node heights, computed as the inner product of the node coordinates
-        x and the direction vector v.
-    index: torch.LongTensor
-        The index that indicates to which pointcloud a node height belongs. For
-        the node heights it is the same as the batch index, for the higher order
-        simplices it will have to be recomputed.
-    lin: torch.FloatTensor
-        The discretization of the interval [-1,1] each node height falls in this
-        range due to rescaling in normalizing the data.
-    scale: torch.FloatTensor
-        A single number that scales the sigmoid function by multiplying the
-        sigmoid with the scale. With high (100>) values, the ect will resemble a
-        discrete ECT and with lower values it will smooth the ECT.
-    """
-    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
-
-    # Due to (I believe) a bug in segment_add_coo, we have to first transpose
-    # and then apply segment add. In the original code movedim was applied after
-    # and that yields an bug in the backwards pass. Will have to be reported to
-    # pytorch eventually.
-    ecc = ecc.movedim(0, 2).movedim(0, 1)
-    return segment_add_coo(ecc, index)
-
-
-def compute_ect_points(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
-    """Computes the Euler Characteristic Transform of a batch of point clouds.
-
-    Parameters
-    ----------
-    batch : Batch
-        A batch of data containing the node coordinates and batch index.
-    v: torch.FloatTensor
-        The direction vector that contains the directions.
-    lin: torch.FloatTensor
-        The discretization of the interval [-1,1] each node height falls in this
-        range due to rescaling in normalizing the data.
-    """
-    nh = batch.x @ v
-    return compute_ecc(nh, batch.batch, lin)
-
-
-def compute_ect_edges(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
-    """Computes the Euler Characteristic Transform of a batch of graphs.
-
-    Parameters
-    ----------
-    batch : Batch
-        A batch of data containing the node coordinates, the edges and batch
-        index.
-    v: torch.FloatTensor
-        The direction vector that contains the directions.
-    lin: torch.FloatTensor
-        The discretization of the interval [-1,1] each node height falls in this
-        range due to rescaling in normalizing the data.
-    """
-    # Compute the node heigths
-    nh = batch.x @ v
-
-    # Perform a lookup with the edge indices on node heights, this replaces the
-    # node index with its node height and then compute the maximum over the
-    # columns to compute the edge height.
-    eh, _ = nh[batch.edge_index].max(dim=0)
-
-    # Compute which batch an edge belongs to. We take the first index of the
-    # edge (or faces) and do a lookup on the batch index of that node in the
-    # batch indices of the nodes.
-    batch_index_nodes = batch.batch
-    batch_index_edges = batch.batch[batch.edge_index[0]]
-
-    return compute_ecc(nh, batch_index_nodes, lin) - compute_ecc(
-        eh, batch_index_edges, lin
-    )
-
-
-def compute_ect_faces(batch: Batch, v: torch.FloatTensor, lin: torch.FloatTensor):
-    """Computes the Euler Characteristic Transform of a batch of meshes.
-
-    Parameters
-    ----------
-    batch : Batch
-        A batch of data containing the node coordinates, edges, faces and batch
-        index.
-    v: torch.FloatTensor
-        The direction vector that contains the directions.
-    lin: torch.FloatTensor
-        The discretization of the interval [-1,1] each node height falls in this
-        range due to rescaling in normalizing the data.
-    """
-    # Compute the node heigths
-    nh = batch.x @ v
-
-    # Perform a lookup with the edge indices on node heights, this replaces the
-    # node index with its node height and then compute the maximum over the
-    # columns to compute the edge height.
-    eh, _ = nh[batch.edge_index].max(dim=0)
-
-    # Do the same thing for the faces.
-    fh, _ = nh[batch.face].max(dim=0)
-
-    # Compute which batch an edge belongs to. We take the first index of the
-    # edge (or faces) and do a lookup on the batch index of that node in the
-    # batch indices of the nodes.
-    batch_index_nodes = batch.batch
-    batch_index_edges = batch.batch[batch.edge_index[0]]
-    batch_index_faces = batch.batch[batch.face[0]]
-
-    return (
-        compute_ecc(nh, batch_index_nodes, lin)
-        - compute_ecc(eh, batch_index_edges, lin)
-        + compute_ecc(fh, batch_index_faces, lin)
-    )
-
-
 def normalize(ect):
     """Returns the normalized ect, scaled to lie in the interval 0,1"""
     return ect / torch.amax(ect, dim=(2, 3)).unsqueeze(2).unsqueeze(2)
@@ -252,17 +138,6 @@ class ECTLayer(nn.Module):
     def __init__(self, config: ECTConfig, v=None):
         super().__init__()
         self.config = config
-        self.lin = nn.Parameter(
-            torch.linspace(-config.radius, config.radius, config.bump_steps).view(
-                -1, 1, 1, 1
-            ),
-            requires_grad=False,
-        )
-
-        # If provided with one set of directions.
-        # For backwards compatibility.
-        if v.ndim == 2:
-            v.unsqueeze(0)
 
         # The set of directions is added
         if config.fixed:
@@ -271,17 +146,11 @@ class ECTLayer(nn.Module):
             # Movedim to make geotorch happy, me not happy.
             self.v = nn.Parameter(torch.zeros_like(v.movedim(-1, -2)))
             geotorch.constraints.sphere(self, "v", radius=config.radius)
+
             # Since geotorch randomizes the vector during initialization, we
             # assign the values after registering it with spherical constraints.
             # See Geotorch documentation for examples.
             self.v = v.movedim(-1, -2)
-
-        if config.ect_type == "points":
-            self.compute_ect = compute_ect_points
-        elif config.ect_type == "edges":
-            self.compute_ect = compute_ect_edges
-        elif config.ect_type == "faces":
-            self.compute_ect = compute_ect_faces
 
     def forward(self, batch: Batch):
         """Forward method for the ECT Layer.
@@ -298,12 +167,45 @@ class ECTLayer(nn.Module):
         ect: torch.FloatTensor
             Returns the ECT of each data object in the batch. If the layer is
             initialized with v of the shape [ndims,num_thetas], the returned ECT
-            has shape [batch,num_thetas,bump_steps]. In case the layer is
+            has shape [batch,num_thetas,resolution]. In case the layer is
             initialized with v of the form [n_channels, ndims, num_thetas] the
-            returned ECT has the shape [batch,n_channels,num_thetas,bump_steps]
+            returned ECT has the shape [batch,n_channels,num_thetas,resolution]
         """
+
         # Movedim for geotorch.
-        ect = self.compute_ect(batch, self.v.movedim(-1, -2), self.lin)
+        # NOTE: This needs improvement!
+
+        if self.config.ect_type == "points":
+            ect = compute_ect_points(
+                batch.x,
+                self.v.movedim(-1, -2),
+                self.config.radius,
+                self.config.resolution,
+                self.config.scale,
+                batch.batch,
+            )
+        elif self.config.ect_type == "edges":
+            ect = compute_ect_edges(
+                batch.x,
+                batch.edge_index,
+                self.v.movedim(-1, -2),
+                self.config.radius,
+                self.config.resolution,
+                self.config.scale,
+                batch.batch,
+            )
+        elif self.config.ect_type == "faces":
+            ect = compute_ect_mesh(
+                batch,
+                batch.edge_index,
+                batch.face,
+                self.v.movedim(-1, -2),
+                self.config.radius,
+                self.config.resolution,
+                self.config.scale,
+                batch.batch,
+            )
+
         if self.config.normalized:
             return normalize(ect)
         return ect.squeeze()

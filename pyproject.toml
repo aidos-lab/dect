@@ -17,6 +17,8 @@ classifiers = [
 python = ">=3.10.0"
 torch = ">2.0.0"
 pdoc = "^15.0.1"
+torch-geometric = "^2.6.1"
+geotorch = "^0.3.0"
 
 
 [tool.poetry.group.dev.dependencies]
