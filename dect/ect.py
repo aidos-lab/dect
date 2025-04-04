@@ -82,7 +82,11 @@ def compute_ect(
         batch_len = int(index.max() + 1)
     else:
         batch_len = 1
-        index = torch.zeros(size=(len(x),), dtype=torch.int32)
+        index = torch.zeros(
+            size=(len(x),),
+            dtype=torch.int32,
+            device=nh.device,
+        )
 
     # v is of shape [d, num_thetas]
     num_thetas = v.shape[1]
@@ -91,7 +95,7 @@ def compute_ect(
 
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
-    lin = torch.linspace(-radius, radius, resolution,device=x.device).view(-1, 1, 1)
+    lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
     ecc = ect_fn(scale * torch.sub(lin, nh))
 
     output = torch.zeros(
@@ -208,7 +212,11 @@ def compute_ect_points(
         batch_len = int(index.max() + 1)
     else:
         batch_len = 1
-        index = torch.zeros(size=(len(x),), dtype=torch.int32)
+        index = torch.zeros(
+            size=(len(x),),
+            dtype=torch.int32,
+            device=nh.device,
+        )
 
     # v is of shape [ambient_dimension, num_thetas]
     num_thetas = v.shape[1]
@@ -266,7 +274,11 @@ def compute_ect_edges(
         batch_len = int(index.max() + 1)
     else:
         batch_len = 1
-        index = torch.zeros(size=(len(x),), dtype=torch.int32)
+        index = torch.zeros(
+            size=(len(x),),
+            dtype=torch.int32,
+            device=nh.device,
+        )
 
     # v is of shape [ambient_dimension, num_thetas]
     num_thetas = v.shape[1]
@@ -344,7 +356,7 @@ def compute_ect_mesh(
         batch_len = int(index.max() + 1)
     else:
         batch_len = 1
-        index = torch.zeros(size=(len(x),), dtype=torch.int32)
+        index = torch.zeros(size=(len(x),), dtype=torch.int32, device=nh.device)
 
     # v is of shape [d, num_thetas]
     num_thetas = v.shape[1]
@@ -353,7 +365,7 @@ def compute_ect_mesh(
 
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
-    lin = torch.linspace(-radius, radius, resolution,device=x.device).view(-1, 1, 1)
+    lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
