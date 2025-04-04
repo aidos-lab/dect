@@ -91,7 +91,7 @@ def compute_ect(
 
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
-    lin = torch.linspace(-radius, radius, resolution).view(-1, 1, 1)
+    lin = torch.linspace(-radius, radius, resolution,device=x.device).view(-1, 1, 1)
     ecc = ect_fn(scale * torch.sub(lin, nh))
 
     output = torch.zeros(
@@ -217,7 +217,7 @@ def compute_ect_points(
 
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
-    lin = torch.linspace(-radius, radius, resolution).view(-1, 1, 1)
+    lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
@@ -353,7 +353,7 @@ def compute_ect_mesh(
 
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
-    lin = torch.linspace(-radius, radius, resolution).view(-1, 1, 1)
+    lin = torch.linspace(-radius, radius, resolution,device=x.device).view(-1, 1, 1)
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
