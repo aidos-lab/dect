@@ -367,6 +367,7 @@ def compute_ect_mesh(
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
+
     output = torch.zeros(
         size=out_shape,
         device=nh.device,
