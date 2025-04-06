@@ -85,7 +85,7 @@ def compute_ect(
         index = torch.zeros(
             size=(len(x),),
             dtype=torch.int32,
-            device=nh.device,
+            device=x.device,
         )
 
     # v is of shape [d, num_thetas]
