@@ -215,7 +215,7 @@ def compute_ect_points(
         index = torch.zeros(
             size=(len(x),),
             dtype=torch.int32,
-            device=nh.device,
+            device=x.device,
         )
 
     # v is of shape [ambient_dimension, num_thetas]
@@ -277,7 +277,7 @@ def compute_ect_edges(
         index = torch.zeros(
             size=(len(x),),
             dtype=torch.int32,
-            device=nh.device,
+            device=x.device,
         )
 
     # v is of shape [ambient_dimension, num_thetas]

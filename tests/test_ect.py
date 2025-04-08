@@ -5,8 +5,8 @@ Tests the ect functions.
 import torch
 from torch.cuda import is_available
 
-from dect.directions import generate_2d_directions
-from dect.ect import compute_ect
+from dect.directions import generate_2d_directions, generate_uniform_directions
+from dect.ect import compute_ect, compute_ect_point_cloud, compute_ect_points
 
 
 def test_true():
@@ -18,7 +18,7 @@ Test the ECT for point clouds.
 """
 
 
-def test_compute_ect_case_point_clouds():
+def test_compute_ect_case_points():
     """
     Test the `compute_ect` function for point clouds.
     """
@@ -38,7 +38,7 @@ def test_compute_ect_case_point_clouds():
     torch.testing.assert_close(ect.min(), torch.tensor(0.0, dtype=torch.float32))
 
 
-def test_compute_ect_case_point_clouds_cuda():
+def test_compute_ect_case_points_cuda():
     """
     Test the `compute_ect` function for point clouds on the gpu.
     """
@@ -63,6 +63,54 @@ def test_compute_ect_case_point_clouds_cuda():
     torch.testing.assert_close(
         ect.min(), torch.tensor(0.0, dtype=torch.float32, device=device)
     )
+
+
+def test_compute_ect_point_cloud_case_cpu():
+    """
+    Tests the ECT computation of a point cloud.
+    Differs in that it expects an input shape of
+    size [B,N,D], where B is the batch size,
+    N is the number of points and D is the ambient
+    dimension.
+    """
+    ambient_dimension = 4
+    num_pts = 100
+    batch_size = 8
+    num_thetas = 100
+    seed = 0
+    x = torch.rand(size=(batch_size, num_pts, ambient_dimension))
+    v = generate_uniform_directions(
+        num_thetas=num_thetas, d=ambient_dimension, device="cpu", seed=seed
+    )
+
+    ect = compute_ect_point_cloud(x, v, radius=10, resolution=30, scale=500)
+
+    assert ect[0].max() == num_pts
+    assert ect[0].min() == 0
+
+
+def test_compute_ect_point_cloud_case_cuda():
+    """
+    Tests the ECT computation of a point cloud.
+    Differs in that it expects an input shape of
+    size [B,N,D], where B is the batch size,
+    N is the number of points and D is the ambient
+    dimension.
+    """
+    ambient_dimension = 4
+    num_pts = 100
+    batch_size = 8
+    num_thetas = 100
+    seed = 0
+    x = torch.rand(size=(batch_size, num_pts, ambient_dimension), device="cuda")
+    v = generate_uniform_directions(
+        num_thetas=num_thetas, d=ambient_dimension, device="cuda", seed=seed
+    )
+
+    ect = compute_ect_point_cloud(x, v, radius=10, resolution=30, scale=500)
+
+    assert ect[0].max() == num_pts
+    assert ect[0].min() == 0
 
 
 #     def test_ecc_multi_set_directions(self):
