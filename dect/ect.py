@@ -291,7 +291,7 @@ def compute_ect_edges(
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
-        device=nh.device,
+        device=x.device,
     )
 
     output.index_add_(1, index, ecc)
