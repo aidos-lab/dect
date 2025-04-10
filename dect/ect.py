@@ -287,7 +287,7 @@ def compute_ect_edges(
 
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
-    lin = torch.linspace(-radius, radius, resolution).view(-1, 1, 1)
+    lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
