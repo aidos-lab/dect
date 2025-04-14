@@ -2,21 +2,17 @@
 NOTE: Under construction.
 TODO: Needs implementation and refactoring.
 
-
 Implementation of the ECT with learnable parameters.
 """
 
-from typing import TypeAlias, Literal
 from dataclasses import dataclass
+from typing import Literal, TypeAlias
 
+import geotorch
 import torch
 from torch import nn
-import geotorch
-from dect.ect import (
-    compute_ect_points,
-    compute_ect_edges,
-    compute_ect_mesh,
-)
+
+from dect.ect import compute_ect_edges, compute_ect_mesh, compute_ect_points
 from dect.ect_fn import scaled_sigmoid
 
 Tensor: TypeAlias = torch.Tensor
@@ -145,7 +141,7 @@ class ECTLayer(nn.Module):
         else:
             # Movedim to make geotorch happy, me not happy.
             self.v = nn.Parameter(torch.zeros_like(v.movedim(-1, -2)))
-            geotorch.constraints.sphere(self, "v", radius=config.radius)
+            geotorch.constraints.sphere(self, "v", radius=1.0)
 
             # Since geotorch randomizes the vector during initialization, we
             # assign the values after registering it with spherical constraints.
