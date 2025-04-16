@@ -185,18 +185,15 @@ def compute_ect_points(
     scale: float,
     index: Tensor | None = None,
 ):
-    """Computes the Euler Characteristic Transform of a batch of graphs.
+    """
+    Computes the Euler Characteristic Transform of a batch of point
+    clouds in `torch-geometric` format.
 
     Parameters
     ----------
     x : Tensor
         The point cloud of shape [B,N,D] where B is the number of point clouds,
         N is the number of points and D is the ambient dimension.
-    edge_index : Tensor
-        The edge index tensor in torch geometric format, has to have shape
-        [2,num_edges]. Be careful when using undirected graphs, since torch
-        geometric views undirected graphs as 2 directed edges, leading to
-        double counts.
     v : Tensor
         The tensor of directions of shape [D,N], where D is the ambient
         dimension and N is the number of directions.
@@ -206,6 +203,9 @@ def compute_ect_points(
         Number of steps to divide the lin interval into.
     scale : Tensor
         The multipicative factor for the sigmoid function.
+    index: Tensor
+        Tensor of integers batching the points in their respective batch.
+        The index tensor is assumed to start at 0.
     """
 
     if index is not None:
@@ -268,6 +268,9 @@ def compute_ect_edges(
         Number of steps to divide the lin interval into.
     scale : Tensor
         The multipicative factor for the sigmoid function.
+    index: Tensor
+        Tensor of integers batching the points in their respective batch.
+        The index tensor is assumed to start at 0.
     """
 
     if index is not None:
@@ -349,14 +352,16 @@ def compute_ect_mesh(
         Number of steps to divide the lin interval into.
     scale : Tensor
         The multipicative factor for the sigmoid function.
+    index: Tensor
+        Tensor of integers batching the points in their respective batch.
+        The index tensor is assumed to start at 0.
     """
 
-    # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
     if index is not None:
         batch_len = int(index.max() + 1)
     else:
         batch_len = 1
-        index = torch.zeros(size=(len(x),), dtype=torch.int32, device=nh.device)
+        index = torch.zeros(size=(len(x),), dtype=torch.int32, device=x.device)
 
     # v is of shape [d, num_thetas]
     num_thetas = v.shape[1]
