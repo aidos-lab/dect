@@ -78,6 +78,10 @@ def compute_ect(
     """
 
     # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
+
+    # ensure that the scale is in the right device
+    scale = torch.tensor([scale], device=x.device)
+
     if index is not None:
         batch_len = int(index.max() + 1)
     else:
@@ -165,6 +169,10 @@ def compute_ect_point_cloud(
         point clouds (thus ECT's), N is the number of direction and R is the
         resolution.
     """
+
+    # ensure that the scale is in the right device
+    scale = torch.tensor([scale], device=x.device)
+
     lin = torch.linspace(
         start=-radius, end=radius, steps=resolution, device=x.device
     ).view(-1, 1, 1)
@@ -207,6 +215,9 @@ def compute_ect_points(
         Tensor of integers batching the points in their respective batch.
         The index tensor is assumed to start at 0.
     """
+
+    # ensure that the scale is in the right device
+    scale = torch.tensor([scale], device=x.device)
 
     if index is not None:
         batch_len = int(index.max() + 1)
@@ -272,6 +283,9 @@ def compute_ect_edges(
         Tensor of integers batching the points in their respective batch.
         The index tensor is assumed to start at 0.
     """
+
+    # ensure that the scale is in the right device
+    scale = torch.tensor([scale], device=x.device)
 
     if index is not None:
         batch_len = int(index.max() + 1)
@@ -356,6 +370,9 @@ def compute_ect_mesh(
         Tensor of integers batching the points in their respective batch.
         The index tensor is assumed to start at 0.
     """
+
+    # ensure that the scale is in the right device
+    scale = torch.tensor([scale], device=x.device)
 
     if index is not None:
         batch_len = int(index.max() + 1)
