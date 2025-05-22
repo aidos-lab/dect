@@ -25,6 +25,7 @@ class EctBatch:
     ect: Tensor | None = None
 
 
+@dataclass
 class EctConfig:
     """
     Config for initializing an ect layer.
