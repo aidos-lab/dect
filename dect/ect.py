@@ -25,9 +25,10 @@ Tensor: TypeAlias = torch.Tensor
 """@private"""
 
 
-def normalize(ect):
+def normalize_ect(ect):
     """Returns the normalized ect, scaled to lie in the interval 0,1"""
-    return ect / torch.amax(ect, dim=(2, 3)).unsqueeze(2).unsqueeze(2)
+    breakpoint()
+    return ect / torch.amax(ect, dim=(-2, -3))
 
 
 def compute_ect(
@@ -180,7 +181,7 @@ def compute_ect_point_cloud(
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     ect = torch.sum(ecc, dim=2)
     if normalize:
-        ect = ect / torch.amax(ect, dim=(-1, -2), keepdim=True)
+        ect = normalize_ect(ect)
 
     return ect
 
@@ -442,6 +443,7 @@ def compute_ect_channels(
     channels: Tensor,
     index: Tensor | None = None,
     max_channels: int | None = None,
+    normalize: bool = False,
 ):
     """
     Allows for channels within the point cloud to separated in different
@@ -474,7 +476,7 @@ def compute_ect_channels(
     # v is of shape [ambient_dimension, num_thetas]
     num_thetas = v.shape[1]
 
-    out_shape = (resolution, batch_len, num_thetas)
+    out_shape = (resolution, batch_len * (max_channels + 1), num_thetas)
 
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
@@ -486,6 +488,10 @@ def compute_ect_channels(
     )
 
     output.index_add_(1, index, ecc)
+    ect = output.movedim(0, 1)
+
+    if normalize:
+        ect = ect / torch.amax(ect, dim=(-2, -3))
 
     # Returns the ect as [batch_len, num_thetas, resolution]
-    return output.movedim(0, 1).reshape(-1, max_channels, num_thetas, resolution)
+    return ect.reshape(-1, max_channels + 1, resolution, num_thetas)
