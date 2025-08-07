@@ -16,6 +16,7 @@ def compute_ect_channels(
     scale: float,
     channels: Tensor,
     index: Tensor | None = None,
+    max_channels: int | None = None,
 ):
     """
     Allows for channels within the point cloud to separated in different
@@ -29,7 +30,8 @@ def compute_ect_channels(
     scale = torch.tensor([scale], device=x.device)
 
     # Compute maximum channels.
-    max_channels = channels.max()
+    if max_channels is None:
+        max_channels = int(channels.max())
 
     if index is not None:
         batch_len = int(index.max() + 1)
@@ -61,4 +63,4 @@ def compute_ect_channels(
     output.index_add_(1, index, ecc)
 
     # Returns the ect as [batch_len, num_thetas, resolution]
-    return output.movedim(0, 1).reshape(-1, int(max_channels), num_thetas, resolution)
+    return output.movedim(0, 1).reshape(-1, max_channels, num_thetas, resolution)
