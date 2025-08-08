@@ -66,6 +66,32 @@ plt.imshow(ect.detach().squeeze().numpy().T)
 plt.show()
 ```
 
+
+## Fast Euler Characteristic Transform
+
+
+```
+from dect.directions import generate_2d_directions
+from dect.fect import compute_fast_ect
+
+v = generate_2d_directions(num_thetas=2048).cuda()
+x_true = 0.5 * torch.rand(size=(10000, 2)).cuda()
+x = torch.nn.Parameter(0.2 * (torch.rand(size=(10000, 2), device="cuda") - 0.5))
+
+optimizer = torch.optim.Adam([x], lr=0.01)
+
+for epoch in range(200):
+    optimizer.zero_grad()
+    ect_true = fastect(x_true, v)
+    ect_pred = fastect(x, v)
+    loss = torch.nn.functional.mse_loss(ect_pred, ect_true)
+    loss.backward()
+    optimizer.step()
+```
+
+
+
+
 ## License
 
 Our code is released under a BSD-3-Clause license. This license essentially
