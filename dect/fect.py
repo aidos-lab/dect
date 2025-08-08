@@ -36,8 +36,8 @@ def bincount(idx, resolution):
 def fast_ect(x, v):
     """Fast ECT for point clouds."""
     resolution = v.shape[1]
-    nh = ((torch.matmul(x, v) + 1) * (resolution // 2)).to(torch.uint16)
-    return bincount(nh, resolution)
+    nh = ((torch.matmul(x, v) + 1) * (resolution // 2)).to(torch.uint32)
+    return bincount(nh, resolution), nh
 
 
 def fast_ect_edges(x, ei, v):
