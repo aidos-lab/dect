@@ -51,7 +51,7 @@ def fast_ect_edges(x, ei, v):
 class FastECT(torch.autograd.Function):
     @staticmethod
     def forward(x, v):
-        ect, idx = fast_ect_fn(x, v)
+        ect, idx = fast_ect(x, v)
         return ect.cumsum(dim=0), ect, idx
 
     @staticmethod
