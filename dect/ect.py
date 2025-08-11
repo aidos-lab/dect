@@ -211,7 +211,7 @@ def compute_ect_points(
     resolution : int
         Number of steps to divide the lin interval into.
     scale : Tensor
-        The multipicative factor for the sigmoid function.
+        The multiplicative factor for the sigmoid function.
     index: Tensor
         Tensor of integers batching the points in their respective batch.
         The index tensor is assumed to start at 0.
@@ -279,7 +279,7 @@ def compute_ect_edges(
     resolution : int
         Number of steps to divide the lin interval into.
     scale : Tensor
-        The multipicative factor for the sigmoid function.
+        The multiplicative factor for the sigmoid function.
     index: Tensor
         Tensor of integers batching the points in their respective batch.
         The index tensor is assumed to start at 0.
@@ -449,7 +449,7 @@ def compute_ect_channels(
     Allows for channels within the point cloud to separated in different
     ECT's.
 
-    Input is a point cloud of size (B*num_point_per_pc,num_features) with an addtional feature vector with the
+    Input is a point cloud of size (B*num_point_per_pc,num_features) with an additional feature vector with the
     channel number for each point and the output is ECT for shape [B,num_channels,num_thetas,resolution]
     """
 
