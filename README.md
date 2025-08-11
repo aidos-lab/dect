@@ -68,11 +68,34 @@ plt.imshow(ect.detach().squeeze().numpy().T)
 plt.show()
 ```
 
+## Compute the ECT of point clouds with channels. 
+
+It is often of interest to compute the ECT of point clouds with different categorical types, 
+such as atom numbers in molecules. The `compute_ect_channels` function provides a method to 
+compute the ECT per categorical type, resulting in a set of ECTs. 
+We include an example below. 
+
+```{python}
+import torch
+
+from dect.directions import generate_2d_directions
+from dect.ect import compute_ect_channels
+
+v = generate_2d_directions()
+x = torch.rand(size=(10, 2))
+batch = torch.repeat_interleave(torch.tensor([0, 1]), repeats=5)
+z = torch.randint(low=0, high=3, size=(10,))
+
+ect = compute_ect_channels(x, v, radius=1, resolution=64, scale=200, index=batch, channels=z)
+
+ect.shape # Result is an ECT of shape [2,3,64,64]
+```
+
 
 ## Fast Euler Characteristic Transform
 
 
-```
+```{python}
 from dect.directions import generate_2d_directions
 from dect.fect import compute_fast_ect
 
