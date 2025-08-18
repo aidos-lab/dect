@@ -178,6 +178,8 @@ def compute_ect_point_cloud(
         start=-radius, end=radius, steps=resolution, device=x.device
     ).view(-1, 1, 1)
     nh = (x @ v).unsqueeze(1)
+    nh[nh.isnan()] = torch.inf
+    nh[nh.isinf()] = torch.inf
     ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     ect = torch.sum(ecc, dim=2)
     if normalize:
