@@ -3,6 +3,7 @@ Functions to initialize directions in 2, 3 and $n$ dimensions.
 """
 
 import itertools
+
 import torch
 
 
@@ -10,8 +11,8 @@ def generate_uniform_directions(num_thetas: int, d: int, seed: int, device: str)
     """
     Generate randomly sampled directions from a sphere in d dimensions.
 
-    A standard normal is sampled and projected onto the unit sphere to 
-    yield a randomly sampled set of points on the unit spere. Please 
+    A standard normal is sampled and projected onto the unit sphere to
+    yield a randomly sampled set of points on the unit spere. Please
     note that the generated tensor has shape [d, num_thetas].
 
     Parameters
@@ -58,8 +59,6 @@ def generate_2d_directions(num_thetas: int = 64):
 
 def generate_multiview_directions(num_thetas: int, d: int):
     """
-    NOTE: Partially depreciated.
-
     Generates multiple sets of structured directions in n dimensions.
 
     We generate sets of directions by embedding the 2d unit circle in d
@@ -79,20 +78,34 @@ def generate_multiview_directions(num_thetas: int, d: int):
     d: int
         The dimension of the unit sphere. Default is 3 (hence R^3)
     """
-    w = torch.vstack(
-        [
-            torch.sin(torch.linspace(0, 2 * torch.pi, num_thetas)),
-            torch.cos(torch.linspace(0, 2 * torch.pi, num_thetas)),
-        ]
-    )
 
     # We obtain n choose 2 channels.
     idx_pairs = list(itertools.combinations(range(d), r=2))
 
-    v = torch.zeros(size=(len(idx_pairs), d, num_thetas))
+    num_directions_per_circle = num_thetas // len(idx_pairs)
+    remainder = num_thetas % len(idx_pairs)
 
+    w = torch.vstack(
+        [
+            torch.sin(
+                torch.linspace(0, 2 * torch.pi, num_directions_per_circle + remainder)
+            ),
+            torch.cos(
+                torch.linspace(0, 2 * torch.pi, num_directions_per_circle + remainder)
+            ),
+        ]
+    )
+
+    multiview_dirs = []
     for idx, idx_pair in enumerate(idx_pairs):
-        v[idx, idx_pair[0], :] = w[0]
-        v[idx, idx_pair[1], :] = w[1]
+        num_t = num_directions_per_circle
+        if idx == 0 and remainder != 0:
+            num_t = num_directions_per_circle + remainder
 
-    return v
+        v = torch.zeros(size=(d, num_t))
+        v[idx_pair[0], :] = w[0, :num_t]
+        v[idx_pair[1], :] = w[1, :num_t]
+
+        multiview_dirs.append(v)
+
+    return torch.hstack(multiview_dirs)
