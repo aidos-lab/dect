@@ -460,7 +460,7 @@ def compute_ect_channels(
 
     # Compute maximum channels.
     if max_channels is None:
-        max_channels = int(channels.max())
+        max_channels = int(channels.max()) + 1
 
     if index is not None:
         batch_len = int(index.max() + 1)
@@ -478,7 +478,7 @@ def compute_ect_channels(
     # v is of shape [ambient_dimension, num_thetas]
     num_thetas = v.shape[1]
 
-    out_shape = (resolution, batch_len * (max_channels + 1), num_thetas)
+    out_shape = (resolution, batch_len * max_channels, num_thetas)
 
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
@@ -496,4 +496,4 @@ def compute_ect_channels(
         ect = ect / torch.amax(ect, dim=(-2, -3))
 
     # Returns the ect as [batch_len, num_thetas, resolution]
-    return ect.reshape(-1, max_channels + 1, resolution, num_thetas)
+    return ect.reshape(-1, max_channels, resolution, num_thetas)
