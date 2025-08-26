@@ -14,9 +14,10 @@ Accelerating the implementation for the differentiable case is an active part of
 research. The non-differentiable case is easily scalable to medium large simplicial
 complexes.
 """
-
+import warnings
 from typing import Callable, TypeAlias
 
+import os
 import torch
 
 from dect.ect_fn import indicator
@@ -451,49 +452,79 @@ def compute_ect_channels(
     Allows for channels within the point cloud to separated in different
     ECT's.
 
-    Input is a point cloud of size (B*num_point_per_pc,num_features) with an additional feature vector with the
-    channel number for each point and the output is ECT for shape [B,num_channels,num_thetas,resolution]
+    Input is a ragged-batch point set of size (N, 3) with an additional vector
+    `channels` containing a channel id per point and a vector `index` with the
+    batch id per point. Supports either per-batch directions `v` of shape
+    (B, k, 3) or shared directions of shape (3, k).
+
+    Returns a tensor of shape (B, k, resolution, C) where C is the number of
+    channels (== max_channels).
     """
 
-    # Ensure that the scale is in the right device
-    scale = torch.tensor([scale], device=x.device)
+    strict = bool(int(os.getenv("ECT_STRICT_LAYOUT", "0")))
 
-    # Compute maximum channels.
-    if max_channels is None:
-        max_channels = int(channels.max()) + 1
+    def _depwarn(msg: str):
+        warnings.warn(msg, DeprecationWarning, stacklevel=3)
 
-    if index is not None:
-        batch_len = int(index.max() + 1)
+
+    if v.dim() == 2:
+        # shared directions
+        if v.shape == (3, v.shape[1]):  # (3, k)
+            if strict:
+                raise ValueError("Directions must be (..., k, 3); got (3, k).")
+            _depwarn("Passing directions as (3, k) is deprecated; use (k, 3).")
+            v = v.transpose(0, 1)  # -> (k, 3)
+        elif v.shape[-1] != 3:
+            raise ValueError("v must be (k, 3) or (3, k) for 2D inputs.")
+        return v.unsqueeze(0)  # -> (1, k, 3)
+
+    # Ensure types/devices
+    x = x.to(dtype=torch.get_default_dtype())
+    scale = torch.as_tensor(scale, device=x.device, dtype=x.dtype)
+
+    # Infer B and set default index if needed
+    if index is None or index.numel() == 0:
+        index = torch.zeros((x.size(0),), dtype=torch.long, device=x.device)
     else:
-        batch_len = 1
-        index = torch.zeros(
-            size=(len(x),),
-            dtype=torch.int32,
-            device=x.device,
-        )
+        index = index.to(dtype=torch.long, device=x.device)
+    B = int(index.max().item()) + 1
 
-    # Fix the index to interleave with the channel info.
-    index = max_channels * index + channels
+    # Channels and max_channels
+    channels = channels.to(dtype=torch.long, device=x.device)
+    if max_channels is None:
+        max_channels = int(channels.max().item()) + 1
 
-    # v is of shape [ambient_dimension, num_thetas]
-    num_thetas = v.shape[1]
+    # Determine number of directions k and compute per-point heights nh: (N, k)
+    if v.dim() == 2:
+        # shared directions: v is (3, k)
+        assert v.size(0) == x.size(1), "v must be (D, k) with D == x.size(1)"
+        k = v.size(1)
+        nh = x @ v  # (N, k)
+    elif v.dim() == 3:
+        # per-batch directions: v is (B, k, 3)
+        assert v.size(0) == B and v.size(-1) == x.size(1), "v must be (B, k, D) with D == x.size(1) and B matching index"
+        k = v.size(1)
+        # gather directions for each point's batch id, then compute dot
+        Vp = v[index]                    # (N, k, 3)
+        nh = (x.unsqueeze(1) * Vp).sum(dim=-1)  # (N, k)
+    else:
+        raise ValueError("v must have shape (D, k) or (B, k, D)")
 
-    out_shape = (resolution, batch_len * max_channels, num_thetas)
+    # Discretize thresholds and compute ECC per point & direction: (R, N, k)
+    lin = torch.linspace(-radius, radius, resolution, device=x.device, dtype=x.dtype).view(resolution, 1, 1)
+    ecc = torch.sigmoid(scale * (lin - nh.unsqueeze(0)))  # (R, N, k)
 
-    # Node heights have shape [num_points, num_directions]
-    nh = x @ v
-    lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
-    output = torch.zeros(
-        size=out_shape,
-        device=nh.device,
-    )
+    # Aggregate by (batch, channel) via a flattened index
+    idx_bc = (index * max_channels + channels).to(dtype=torch.long)  # (N,)
+    out = x.new_zeros((resolution, B * max_channels, k))             # (R, B*C, k)
+    out.index_add_(1, idx_bc, ecc)                                   # sum over points
 
-    output.index_add_(1, index, ecc)
-    ect = output.movedim(0, 1)
+    # Reshape to (B, C, R, k) then permute to (B, k, R, C)
+    ect = out.view(resolution, B, max_channels, k).permute(1, 3, 0, 2).contiguous()  # (B, k, R, C)
 
     if normalize:
-        ect = ect / torch.amax(ect, dim=(-2, -3))
+        # normalize per (B,k) across (R,C)
+        denom = torch.amax(ect, dim=(-1, -2), keepdim=True).clamp_min(1e-12)
+        ect = ect / denom
 
-    # Returns the ect as [batch_len, num_thetas, resolution]
-    return ect.reshape(-1, max_channels, resolution, num_thetas)
+    return ect
