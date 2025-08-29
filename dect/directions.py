@@ -109,3 +109,37 @@ def generate_multiview_directions(num_thetas: int, d: int):
         multiview_dirs.append(v)
 
     return torch.hstack(multiview_dirs)
+
+
+def generate_spherical_grid_directions(num_thetas: int, num_phis: int, d: int = 3):
+    """
+    Generates a smooth spherical grid of directions on the unit sphere in 3D using
+    latitude–longitude (θ, φ) style sampling.
+
+    The directions are parameterized by θ (polar angle, [0, π]) and φ (azimuthal angle, [0, 2π)),
+    and returned as a tensor of shape [3, num_thetas * num_phis], with each column a unit vector.
+
+    Parameters
+    ----------
+    num_thetas: int
+        Number of θ samples (from 0 to π, inclusive).
+    num_phis: int
+        Number of φ samples (from 0 to 2π, exclusive).
+    d: int
+        Must be 3, as spherical coordinates are for 3D.
+
+    Returns
+    -------
+    Tensor of shape [3, num_thetas * num_phis] containing unit vectors on the sphere.
+    """
+    assert d == 3, "Spherical coordinates are only defined for d=3."
+    theta = torch.linspace(0, torch.pi, num_thetas)
+    phi = torch.linspace(0, 2 * torch.pi, num_phis, endpoint=False)
+    phi_grid, theta_grid = torch.meshgrid(phi, theta, indexing='ij')  # shape [num_phis, num_thetas]
+    sin_theta = torch.sin(theta_grid)
+    x = sin_theta * torch.cos(phi_grid)
+    y = sin_theta * torch.sin(phi_grid)
+    z = torch.cos(theta_grid)
+    dirs = torch.stack([x, y, z], dim=0)  # [3, num_phis, num_thetas]
+    dirs = dirs.reshape(3, -1)  # [3, num_thetas*num_phis]
+    return dirs
