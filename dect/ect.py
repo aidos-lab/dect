@@ -461,22 +461,16 @@ def compute_ect_channels(
     channels (== max_channels).
     """
 
-    strict = bool(int(os.getenv("ECT_STRICT_LAYOUT", "0")))
-
-    def _depwarn(msg: str):
-        warnings.warn(msg, DeprecationWarning, stacklevel=3)
-
-
+    # Normalize shared direction shape: accept (3,k) or (k,3); keep as (3,k)
     if v.dim() == 2:
-        # shared directions
-        if v.shape == (3, v.shape[1]):  # (3, k)
-            if strict:
-                raise ValueError("Directions must be (..., k, 3); got (3, k).")
-            _depwarn("Passing directions as (3, k) is deprecated; use (k, 3).")
-            v = v.transpose(0, 1)  # -> (k, 3)
-        elif v.shape[-1] != 3:
-            raise ValueError("v must be (k, 3) or (3, k) for 2D inputs.")
-        return v.unsqueeze(0)  # -> (1, k, 3)
+        if v.shape[-1] == 3 and v.shape[0] != 3:
+            # provided as (k,3) -> transpose to (3,k)
+            v = v.transpose(0, 1).contiguous()
+        elif v.shape[0] == 3:
+            # already (3,k)
+            v = v.contiguous()
+        else:
+            raise ValueError(f"v must be (3,k) or (k,3) when 2D; got {tuple(v.shape)}")
 
     # Ensure types/devices
     x = x.to(dtype=torch.get_default_dtype())
