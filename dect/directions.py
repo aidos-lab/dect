@@ -133,9 +133,18 @@ def generate_spherical_grid_directions(num_thetas: int, num_phis: int, d: int = 
     Tensor of shape [3, num_thetas * num_phis] containing unit vectors on the sphere.
     """
     assert d == 3, "Spherical coordinates are only defined for d=3."
-    theta = torch.linspace(0, torch.pi, num_thetas)
-    phi = torch.linspace(0, 2 * torch.pi, num_phis, endpoint=False)
-    phi_grid, theta_grid = torch.meshgrid(phi, theta, indexing='ij')  # shape [num_phis, num_thetas]
+
+    # Removes both poles.
+    theta = torch.linspace(0, torch.pi, num_thetas + 2)[1:-1]
+
+    # Removes one endpoint.
+    phi = torch.linspace(0, 2 * torch.pi, num_phis + 1)[
+        :-1
+    ]  # Induces endpoint=False behavior.
+
+    phi_grid, theta_grid = torch.meshgrid(
+        phi, theta, indexing="ij"
+    )  # shape [num_phis, num_thetas]
     sin_theta = torch.sin(theta_grid)
     x = sin_theta * torch.cos(phi_grid)
     y = sin_theta * torch.sin(phi_grid)
