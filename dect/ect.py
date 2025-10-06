@@ -14,10 +14,11 @@ Accelerating the implementation for the differentiable case is an active part of
 research. The non-differentiable case is easily scalable to medium large simplicial
 complexes.
 """
-import warnings
-from typing import Callable, TypeAlias, List, Optional
 
 import os
+import warnings
+from typing import Callable, List, Optional, TypeAlias
+
 import torch
 
 from dect.ect_fn import indicator
@@ -33,7 +34,7 @@ def normalize_ect(ect):
 
 def compute_ect(
     x: Tensor,
-    *simplices,
+    *simplices: Tensor,
     v: Tensor,
     radius: float,
     resolution: int,
@@ -81,7 +82,7 @@ def compute_ect(
     # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
 
     # ensure that the scale is in the right device
-    scale = torch.tensor([scale], device=x.device)
+    scale_tensor = torch.tensor([scale], device=x.device)
 
     if index is not None:
         batch_len = int(index.max() + 1)
@@ -101,7 +102,7 @@ def compute_ect(
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = ect_fn(scale * torch.sub(lin, nh))
+    ecc = ect_fn(scale_tensor * torch.sub(lin, nh))
 
     output = torch.zeros(
         size=out_shape,
@@ -123,7 +124,7 @@ def compute_ect(
         index_simplex = index[simplex[0]]
 
         # Calculate the ECC of the simplices.
-        secc = (-1) ** (i + 1) * ect_fn(scale * torch.sub(lin, sh))
+        secc = (-1) ** (i + 1) * ect_fn(scale_tensor * torch.sub(lin, sh))
 
         # Add the ECC of the simplices to the running total.
         output.index_add_(1, index_simplex, secc)
@@ -172,7 +173,7 @@ def compute_ect_point_cloud(
     """
 
     # ensure that the scale is in the right device
-    scale = torch.tensor([scale], device=x.device)
+    scale_tensor = torch.tensor([scale], device=x.device)
 
     lin = torch.linspace(
         start=-radius, end=radius, steps=resolution, device=x.device
@@ -180,7 +181,7 @@ def compute_ect_point_cloud(
     nh = (x @ v).unsqueeze(1)
     nh[nh.isnan()] = torch.inf
     nh[nh.isinf()] = torch.inf
-    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
+    ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, nh))
     ect = torch.sum(ecc, dim=2)
     if normalize:
         ect = normalize_ect(ect)
@@ -220,7 +221,7 @@ def compute_ect_points(
     """
 
     # ensure that the scale is in the right device
-    scale = torch.tensor([scale], device=x.device)
+    scale_tensor = torch.tensor([scale], device=x.device)
 
     if index is not None:
         batch_len = int(index.max() + 1)
@@ -240,7 +241,7 @@ def compute_ect_points(
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
+    ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
         device=nh.device,
@@ -288,7 +289,7 @@ def compute_ect_edges(
     """
 
     # ensure that the scale is in the right device
-    scale = torch.tensor([scale], device=x.device)
+    scale_tensor = torch.tensor([scale], device=x.device)
 
     if index is not None:
         batch_len = int(index.max() + 1)
@@ -308,7 +309,7 @@ def compute_ect_edges(
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
+    ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
         device=x.device,
@@ -325,7 +326,7 @@ def compute_ect_edges(
     index_simplex = index[edge_index[0]]
 
     # Calculate the ECC of the edges.
-    secc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, sh))
+    secc = (-1) * torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, sh))
 
     # Add the ECC of the simplices to the running total.
     output.index_add_(1, index_simplex, secc)
@@ -375,7 +376,7 @@ def compute_ect_mesh(
     """
 
     # ensure that the scale is in the right device
-    scale = torch.tensor([scale], device=x.device)
+    scale_tensor = torch.tensor([scale], device=x.device)
 
     if index is not None:
         batch_len = int(index.max() + 1)
@@ -391,14 +392,14 @@ def compute_ect_mesh(
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
+    ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, nh))
 
     output = torch.zeros(
         size=out_shape,
         device=nh.device,
     )
 
-    output.index_add_(1, index, ecc)
+    _ = output.index_add_(1, index, ecc)
 
     # For the calculation of the edges, loop over the simplex tensors.
     # Each index tensor is assumed to be of shape [d,num_simplices],
@@ -413,10 +414,10 @@ def compute_ect_mesh(
     index_simplex = index[edge_index[0]]
 
     # Calculate the ECC of the simplices.
-    edges_ecc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, eh))
+    edges_ecc = (-1) * torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, eh))
 
     # Add the ECC of the simplices to the running total.
-    output.index_add_(1, index_simplex, edges_ecc)
+    _ = output.index_add_(1, index_simplex, edges_ecc)
 
     # Faces heights.
     fh, _ = nh[face_index].max(dim=0)
@@ -427,10 +428,10 @@ def compute_ect_mesh(
     index_simplex = index[face_index[0]]
 
     # Calculate the ECC of the simplices.
-    faces_ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, fh))
+    faces_ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, fh))
 
     # Add the ECC of the simplices to the running total.
-    output.index_add_(1, index_simplex, faces_ecc)
+    _ = output.index_add_(1, index_simplex, faces_ecc)
 
     # Returns the ect as [batch_len, num_thetas, resolution]
     return output.movedim(0, 1).movedim(-1, -2)
@@ -495,25 +496,31 @@ def compute_ect_channels(
         nh = x @ v  # (N, k)
     elif v.dim() == 3:
         # per-batch directions: v is (B, k, 3)
-        assert v.size(0) == B and v.size(-1) == x.size(1), "v must be (B, k, D) with D == x.size(1) and B matching index"
+        assert v.size(0) == B and v.size(-1) == x.size(
+            1
+        ), "v must be (B, k, D) with D == x.size(1) and B matching index"
         k = v.size(1)
         # gather directions for each point's batch id, then compute dot
-        Vp = v[index]                    # (N, k, 3)
+        Vp = v[index]  # (N, k, 3)
         nh = (x.unsqueeze(1) * Vp).sum(dim=-1)  # (N, k)
     else:
         raise ValueError("v must have shape (D, k) or (B, k, D)")
 
     # Discretize thresholds and compute ECC per point & direction: (R, N, k)
-    lin = torch.linspace(-radius, radius, resolution, device=x.device, dtype=x.dtype).view(resolution, 1, 1)
+    lin = torch.linspace(
+        -radius, radius, resolution, device=x.device, dtype=x.dtype
+    ).view(resolution, 1, 1)
     ecc = torch.sigmoid(scale * (lin - nh.unsqueeze(0)))  # (R, N, k)
 
     # Aggregate by (batch, channel) via a flattened index
     idx_bc = (index * max_channels + channels).to(dtype=torch.long)  # (N,)
-    out = x.new_zeros((resolution, B * max_channels, k))             # (R, B*C, k)
-    out.index_add_(1, idx_bc, ecc)                                   # sum over points
+    out = x.new_zeros((resolution, B * max_channels, k))  # (R, B*C, k)
+    out.index_add_(1, idx_bc, ecc)  # sum over points
 
     # Reshape to (B, C, R, k) then permute to (B, k, R, C)
-    ect = out.view(resolution, B, max_channels, k).permute(1, 3, 0, 2).contiguous()  # (B, k, R, C)
+    ect = (
+        out.view(resolution, B, max_channels, k).permute(1, 3, 0, 2).contiguous()
+    )  # (B, k, R, C)
 
     if normalize:
         # normalize per (B,k) across (R,C)
@@ -521,6 +528,7 @@ def compute_ect_channels(
         ect = ect / denom
 
     return ect
+
 
 def compute_ect_hypergraph(
     x: Tensor,
@@ -548,7 +556,9 @@ def compute_ect_hypergraph(
     if v.shape[0] != x.shape[1] and v.shape[1] == x.shape[1]:
         v = v.transpose(0, 1).contiguous()
     if v.shape[0] != x.shape[1]:
-        raise ValueError(f"v has incompatible shape {tuple(v.shape)} for x with D={x.shape[1]}")
+        raise ValueError(
+            f"v has incompatible shape {tuple(v.shape)} for x with D={x.shape[1]}"
+        )
 
     # Types/devices
     x = x.to(dtype=torch.get_default_dtype())
@@ -591,7 +601,9 @@ def compute_ect_hypergraph(
         m = int(he.numel())
         sign = -1 if (m % 2 == 0) else 1  # (-1)**(m-1)
 
-        ecc_he = sign * torch.sigmoid(scale_t * (lin - he_height.view(1, 1, -1)))  # (R, 1, T)
+        ecc_he = sign * torch.sigmoid(
+            scale_t * (lin - he_height.view(1, 1, -1))
+        )  # (R, 1, T)
         out.index_add_(1, b.view(1), ecc_he)
 
     # (R, B, T) -> (B, T, R)
@@ -650,7 +662,9 @@ def compute_ect_hypergraph_channels(
         if v.shape[0] != D and v.shape[1] == D:
             v = v.transpose(0, 1).contiguous()
         if v.shape[0] != D:
-            raise ValueError(f"v has incompatible shape {tuple(v.shape)} for x with D={D}")
+            raise ValueError(
+                f"v has incompatible shape {tuple(v.shape)} for x with D={D}"
+            )
         T = v.shape[1]
         nh = x @ v  # (N, T)
     elif v.dim() == 3:
@@ -667,7 +681,9 @@ def compute_ect_hypergraph_channels(
             T = v.shape[1]
             Vp = v[index]  # (N, T, D)
         else:
-            raise ValueError(f"v has incompatible shape {tuple(v.shape)} for x with D={D}")
+            raise ValueError(
+                f"v has incompatible shape {tuple(v.shape)} for x with D={D}"
+            )
         nh = (x.unsqueeze(1) * Vp).sum(dim=-1)  # (N, T)
     else:
         raise ValueError("v must have shape (D,T), (T,D), (B,T,D), or (B,D,T)")
@@ -708,7 +724,9 @@ def compute_ect_hypergraph_channels(
 
         # Alternating sign: (-1)**(m-1)
         sign = -1 if (m % 2 == 0) else 1
-        ecc_he = sign * torch.sigmoid(scale_t * (lin - he_h.view(1, 1, -1)))  # (R, 1, T)
+        ecc_he = sign * torch.sigmoid(
+            scale_t * (lin - he_h.view(1, 1, -1))
+        )  # (R, 1, T)
 
         # Flattened (batch, channel) index
         idx = (b * max_channels + ch).view(1)  # (1,)
@@ -722,4 +740,3 @@ def compute_ect_hypergraph_channels(
         ect = ect / denom
 
     return ect
-

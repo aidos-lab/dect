@@ -596,6 +596,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "geotorch" },
+    { name = "ipython" },
     { name = "pdoc" },
     { name = "torch" },
     { name = "torch-geometric" },
@@ -616,6 +617,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "geotorch", specifier = ">=0.3.0,<0.4" },
+    { name = "ipython", specifier = ">=8.34.0" },
     { name = "pdoc", specifier = ">=15.0.1,<16" },
     { name = "torch", specifier = ">2.0.0" },
     { name = "torch-geometric", specifier = ">=2.6.1,<3" },
