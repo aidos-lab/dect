@@ -1,11 +1,7 @@
 """Elementwise operations for the calculation of the ECC"""
 
-from typing import TypeAlias
-
 import torch
-
-Tensor: TypeAlias = torch.Tensor
-"""@private"""
+from torch import Tensor
 
 
 def indicator(ecc: Tensor) -> Tensor:
@@ -13,7 +9,7 @@ def indicator(ecc: Tensor) -> Tensor:
     Indicator function for the calculation of the ect.
 
     Args:
-        ecc (Tensor):
+        ecc:
             The height values.
 
     Returns:
@@ -27,10 +23,9 @@ def scaled_sigmoid(ecc: Tensor) -> Tensor:
     Sigmoid function for the calculation of the ect.
 
     Args:
-        ecc (Tensor):
-        The height values.
+        ecc: The height values.
 
     Returns:
-        Tensor: The ECC.
+        The ECC.
     """
     return torch.sigmoid(ecc)

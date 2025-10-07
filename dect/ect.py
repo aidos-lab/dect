@@ -40,43 +40,36 @@ def compute_ect(
     ect_fn: Callable[..., Tensor] = indicator,
 ) -> Tensor:
     """
-    NOTE: Under Active development.
-
     Computes the Euler Characteristic Transform of an arbitrary Simplicial
     Complex. This is the most general, but least optimized which is great for
     small problems and a good start. If performance is a requirement, one of the
     other implemetations is most likely faster at the cost of less flexibility.
 
-    Parameters
-    ----------
-    x : Tensor
+    Args:
+    x:
         The point cloud of shape [BxN,D] where B is the number of point clouds,
         N is the number of points and D is the ambient dimension.
-    simplices: Iterable
+    simplices:
         Contains, as _ordered_ set of arguments, the index tensors for the
         simplicial complex in ascending order. See examples.
-    v : Tensor
+    v:
         The tensor of directions of shape [D,N], where D is the ambient
         dimension and N is the number of directions.
-    radius : float
+    radius:
         Radius of the interval to discretize the ECT into. (Is irrelevant for
         this experiment.)
-    resolution : int
+    resolution:
         Number of steps to divide the lin interval into.
-    scale : Tensor
+    scale:
         The multipicative factor for the sigmoid function.
-    index: Tensor
+    index:
         Tensor of integers batching the points in their respective batch.
         The index tensor is assumed to start at 0, otherwise fails.
-    Returns
-    -------
-    Tensor
+    Returns:
         The ECT of the point cloud of shape [B,N,R] where B is the number of
         point clouds (thus ECT's), N is the number of direction and R is the
         resolution.
     """
-
-    # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
 
     if index is not None:
         batch_len = int(index.max() + 1)
@@ -140,30 +133,25 @@ def compute_ect_point_cloud(
     of the same cardinality. The shape is assumed to be of the form [B,N,D], the
     first dimension forms the index vector.
 
-    Parameters
-    ----------
-    x : Tensor
-        The point cloud of shape [B,N,D] where B is the number of point clouds,
-        N is the number of points and D is the ambient dimension.
-    v : Tensor
-        The tensor of directions of shape [D,N], where D is the ambient
-        dimension and N is the number of directions.
-    radius : float
-        Radius of the interval to discretize the ECT into. (Is irrelevant for
-        this experiment.)
-    resolution : int
-        Number of steps to divide the lin interval into.
-    scale : Tensor
-        The multipicative factor for the sigmoid function.
-    normalize : bool
-        Rescale the pixel values to the interval [0,1]. Default is False.
+    Args:
+        x:
+            The point cloud of shape [B,N,D] where B is the number of point clouds,
+            N is the number of points and D is the ambient dimension.
+        v:
+            The tensor of directions of shape [D,N], where D is the ambient
+            dimension and N is the number of directions.
+        radius:
+            Radius of the interval to discretize the ECT into. (Is irrelevant for
+            this experiment.)
+        resolution:
+            Number of steps to divide the lin interval into.
+        scale:
+            The multipicative factor for the sigmoid function.
+        normalize:
+            Rescale the pixel values to the interval [0,1]. Default is False.
 
-    Returns
-    -------
-    Tensor
-        The ECT of the point cloud of shape [B,N,R] where B is the number of
-        point clouds (thus ECT's), N is the number of direction and R is the
-        resolution.
+    Returns:
+        The ECT of the point cloud of shape [B,N,R] where B is the number of point clouds (thus ECT's), N is the number of direction and R is the resolution.
     """
 
     lin = torch.linspace(
@@ -187,28 +175,30 @@ def compute_ect_points(
     resolution: int,
     scale: float,
     index: Tensor | None = None,
-):
+) -> Tensor:
     """
     Computes the Euler Characteristic Transform of a batch of point
     clouds in `torch-geometric` format.
 
-    Parameters
-    ----------
-    x : Tensor
-        The point cloud of shape [B,N,D] where B is the number of point clouds,
-        N is the number of points and D is the ambient dimension.
-    v : Tensor
-        The tensor of directions of shape [D,N], where D is the ambient
-        dimension and N is the number of directions.
-    radius : float
-        Radius of the interval to discretize the ECT into.
-    resolution : int
-        Number of steps to divide the lin interval into.
-    scale : Tensor
-        The multiplicative factor for the sigmoid function.
-    index: Tensor
-        Tensor of integers batching the points in their respective batch.
-        The index tensor is assumed to start at 0.
+    Args:
+        x:
+            The point cloud of shape [B,N,D] where B is the number of point clouds,
+            N is the number of points and D is the ambient dimension.
+        v:
+            The tensor of directions of shape [D,N], where D is the ambient
+            dimension and N is the number of directions.
+        radius:
+            Radius of the interval to discretize the ECT into.
+        resolution:
+            Number of steps to divide the lin interval into.
+        scale:
+            The multiplicative factor for the sigmoid function.
+        index:
+            Tensor of integers batching the points in their respective batch.
+            The index tensor is assumed to start at 0.
+
+    Returns:
+        The ECT of the batch of points. Output shape is [B, R, T]
     """
 
     if index is not None:
@@ -249,31 +239,33 @@ def compute_ect_edges(
     resolution: int,
     scale: float,
     index: Tensor | None = None,
-):
+) -> Tensor:
     """Computes the Euler Characteristic Transform of a batch of graphs.
 
-    Parameters
-    ----------
-    x : Tensor
-        The point cloud of shape [B,N,D] where B is the number of point clouds,
-        N is the number of points and D is the ambient dimension.
-    edge_index : Tensor
-        The edge index tensor in torch geometric format, has to have shape
-        [2,num_edges]. Be careful when using undirected graphs, since torch
-        geometric views undirected graphs as 2 directed edges, leading to
-        double counts.
-    v : Tensor
-        The tensor of directions of shape [D,N], where D is the ambient
-        dimension and N is the number of directions.
-    radius : float
-        Radius of the interval to discretize the ECT into.
-    resolution : int
-        Number of steps to divide the lin interval into.
-    scale : Tensor
-        The multiplicative factor for the sigmoid function.
-    index: Tensor
-        Tensor of integers batching the points in their respective batch.
-        The index tensor is assumed to start at 0.
+    Args:
+        x:
+            The point cloud of shape [B,N,D] where B is the number of point clouds,
+            N is the number of points and D is the ambient dimension.
+        edge_index:
+            The edge index tensor in torch geometric format, has to have shape
+            [2,num_edges]. Be careful when using undirected graphs, since torch
+            geometric views undirected graphs as 2 directed edges, leading to
+            double counts.
+        v:
+            The tensor of directions of shape [D,N], where D is the ambient
+            dimension and N is the number of directions.
+        radius:
+            Radius of the interval to discretize the ECT into.
+        resolution:
+            Number of steps to divide the lin interval into.
+        scale:
+            The multiplicative factor for the sigmoid function.
+        index:
+            Tensor of integers batching the points in their respective batch.
+            The index tensor is assumed to start at 0.
+
+    Returns:
+        ECT
     """
 
     if index is not None:
@@ -329,35 +321,37 @@ def compute_ect_mesh(
     resolution: int,
     scale: float,
     index: Tensor | None = None,
-):
+) -> Tensor:
     """Computes the Euler Characteristic Transform of a batch of graphs.
 
-    Parameters
-    ----------
-    x : Tensor
-        The point cloud of shape [B,N,D] where B is the number of point clouds,
-        N is the number of points and D is the ambient dimension.
-    edge_index : Tensor
-        The edge index tensor in torch geometric format, has to have shape
-        [2,num_edges]. Be careful when using undirected graphs, since torch
-        geometric views undirected graphs as 2 directed edges, leading to
-        double counts.
-    face_index : Tensor
-        The face index tensor of shape [3,num_faces]. Each column is a face
-        where a face is a triple of indices referencing to the rows of the
-        x tensor with coordinates.
-    v : Tensor
-        The tensor of directions of shape [D,N], where D is the ambient
-        dimension and N is the number of directions.
-    radius : float
-        Radius of the interval to discretize the ECT into.
-    resolution : int
-        Number of steps to divide the lin interval into.
-    scale : Tensor
-        The multipicative factor for the sigmoid function.
-    index: Tensor
-        Tensor of integers batching the points in their respective batch.
-        The index tensor is assumed to start at 0.
+    Args:
+        x:
+            The point cloud of shape [B,N,D] where B is the number of point clouds,
+            N is the number of points and D is the ambient dimension.
+        edge_index:
+            The edge index tensor in torch geometric format, has to have shape
+            [2,num_edges]. Be careful when using undirected graphs, since torch
+            geometric views undirected graphs as 2 directed edges, leading to
+            double counts.
+        face_index:
+            The face index tensor of shape [3,num_faces]. Each column is a face
+            where a face is a triple of indices referencing to the rows of the
+            x tensor with coordinates.
+        v:
+            The tensor of directions of shape [D,N], where D is the ambient
+            dimension and N is the number of directions.
+        radius:
+            Radius of the interval to discretize the ECT into.
+        resolution:
+            Number of steps to divide the lin interval into.
+        scale:
+            The multipicative factor for the sigmoid function.
+        index:
+            Tensor of integers batching the points in their respective batch.
+            The index tensor is assumed to start at 0.
+
+    Returns:
+        The ECT
     """
 
     if index is not None:

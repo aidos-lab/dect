@@ -22,18 +22,10 @@ jobs:
           cache: 'pip'
       - name: Install dependencies
         run: |
-          pip install torch==2.2.0
-          pip install torch-scatter -f https://data.pyg.org/whl/torch-2.2.0+cpu.html
-          pip install git+https://github.com/Lezcano/geotorch/
-          pip install pdoc
+          uv sync
 
-      # ADJUST THIS: install all dependencies (including pdoc)
-      - name: Install dect
-        run: |
-          pip install -e .
-
-      # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
+      # It is assumed that the notebooks are converted to markdown files with `make notebooks`.
       - name: Build Docs
         run: |
           mkdir -p ./docs

@@ -1,0 +1,72 @@
+site_name: DECT - Differentiable Euler Characteristic Transform
+
+theme:
+  name: material 
+  favicon: assets/favico.ico
+  logo: assets/favico.ico
+  features:
+    - navigation.sections
+    - header.autohide
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      toggle:
+        icon: material/weather-night
+        name: switch to dark mode 🌙
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      toggle:
+        icon: material/weather-sunny
+        name: switch to light mode 🌞
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [dect,.]
+          options:
+            docstring_style: google
+            docstring_section_style: list
+  - mkdocs-autoapi:
+      autoapi_dir: dect
+      autoapi_add_nav_entry: Reference
+      autoapi_ignore: 
+        - "**/lorem.py"
+      autoapi_file_patterns: 
+        - "*.py"
+
+markdown_extensions:
+  - markdown_include.include:
+      base_path: docs
+  - pymdownx.extra
+  - pymdownx.highlight
+  - pymdownx.details
+  - pymdownx.saneheaders
+  - pymdownx.smartsymbols
+  - pymdownx.critic:
+      mode: view
+  - pymdownx.snippets
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.superfences
+  - pymdownx.emoji
+  - admonition
+  - meta
+  - toc:
+      permalink: true
+
+nav:
+  - index.md
+  - installation.md
+  - Tutorials: 
+    - Example computation: notebooks/00_example_computation.md
+    - Example Usage: notebooks/01_example_usage.md
+    - Learning Directions: notebooks/02_learning_directions.md
+  - About: 
+    - License: license.md
+    - Contribute: contribute.md
+
