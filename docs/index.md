@@ -1,6 +1,5 @@
 # Welcome
 
-
 This is the official implementation for the **Differentiable Euler Characteristic
 Transform**, a geometrical-topological method for shape classification. Our
 implementation is fully optimized for hardware acceleration,

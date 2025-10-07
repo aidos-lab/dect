@@ -28,12 +28,11 @@ jobs:
       # It is assumed that the notebooks are converted to markdown files with `make notebooks`.
       - name: Build Docs
         run: |
-          mkdir -p ./docs
-          python -m pdoc --docformat numpy --logo "https://avatars.githubusercontent.com/u/88346553?s=200&v=4" dect -o ./docs
+          uvx mkdocs build
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/
+          path: site/
 
   # Deploy the artifact to GitHub pages.
   # This is a separate job so that only actions/deploy-pages has the necessary permissions.

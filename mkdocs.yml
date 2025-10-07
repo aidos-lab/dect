@@ -1,7 +1,7 @@
 site_name: DECT - Differentiable Euler Characteristic Transform
 
 theme:
-  name: material 
+  name: material
   favicon: assets/favico.ico
   logo: assets/favico.ico
   features:
