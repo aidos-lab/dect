@@ -45,25 +45,26 @@ def compute_ect(
     other implemetations is most likely faster at the cost of less flexibility.
 
     Args:
-    x:
-        The point cloud of shape [BxN,D] where B is the number of point clouds,
-        N is the number of points and D is the ambient dimension.
-    simplices:
-        Contains, as _ordered_ set of arguments, the index tensors for the
-        simplicial complex in ascending order. See examples.
-    v:
-        The tensor of directions of shape [D,N], where D is the ambient
-        dimension and N is the number of directions.
-    radius:
-        Radius of the interval to discretize the ECT into. (Is irrelevant for
-        this experiment.)
-    resolution:
-        Number of steps to divide the lin interval into.
-    scale:
-        The multipicative factor for the sigmoid function.
-    index:
-        Tensor of integers batching the points in their respective batch.
-        The index tensor is assumed to start at 0, otherwise fails.
+        x:
+            The point cloud of shape [BxN,D] where B is the number of point clouds,
+            N is the number of points and D is the ambient dimension.
+        simplices:
+            Contains, as _ordered_ set of arguments, the index tensors for the
+            simplicial complex in ascending order. See examples.
+        v:
+            The tensor of directions of shape [D,N], where D is the ambient
+            dimension and N is the number of directions.
+        radius:
+            Radius of the interval to discretize the ECT into. (Is irrelevant for
+            this experiment.)
+        resolution:
+            Number of steps to divide the lin interval into.
+        scale:
+            The multipicative factor for the sigmoid function.
+        index:
+            Tensor of integers batching the points in their respective batch.
+            The index tensor is assumed to start at 0, otherwise fails.
+
     Returns:
         The ECT of the point cloud of shape [B,N,R] where B is the number of
         point clouds (thus ECT's), N is the number of direction and R is the
