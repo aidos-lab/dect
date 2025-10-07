@@ -15,17 +15,15 @@ research. The non-differentiable case is easily scalable to medium large simplic
 complexes.
 """
 
-from typing import Callable, TypeAlias
+from typing import Callable
 
 import torch
+from torch import Tensor
 
 from dect.ect_fn import indicator
 
-Tensor: TypeAlias = torch.Tensor
-"""@private"""
 
-
-def normalize_ect(ect):
+def normalize_ect(ect: Tensor) -> Tensor:
     """Returns the normalized ect, scaled to lie in the interval 0,1"""
     breakpoint()
     return ect / torch.amax(ect, dim=(-2, -3))
@@ -80,9 +78,6 @@ def compute_ect(
 
     # ecc.shape[0], index.max().item() + 1, ecc.shape[2],
 
-    # ensure that the scale is in the right device
-    scale_tensor = torch.tensor([scale], device=x.device)
-
     if index is not None:
         batch_len = int(index.max() + 1)
     else:
@@ -101,7 +96,7 @@ def compute_ect(
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = ect_fn(scale_tensor * torch.sub(lin, nh))
+    ecc = ect_fn(scale * torch.sub(lin, nh))
 
     output = torch.zeros(
         size=out_shape,
@@ -123,7 +118,7 @@ def compute_ect(
         index_simplex = index[simplex[0]]
 
         # Calculate the ECC of the simplices.
-        secc = (-1) ** (i + 1) * ect_fn(scale_tensor * torch.sub(lin, sh))
+        secc = (-1) ** (i + 1) * ect_fn(scale * torch.sub(lin, sh))
 
         # Add the ECC of the simplices to the running total.
         output.index_add_(1, index_simplex, secc)
@@ -171,16 +166,13 @@ def compute_ect_point_cloud(
         resolution.
     """
 
-    # ensure that the scale is in the right device
-    scale_tensor = torch.tensor([scale], device=x.device)
-
     lin = torch.linspace(
         start=-radius, end=radius, steps=resolution, device=x.device
     ).view(-1, 1, 1)
     nh = (x @ v).unsqueeze(1)
     nh[nh.isnan()] = torch.inf
     nh[nh.isinf()] = torch.inf
-    ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, nh))
+    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     ect = torch.sum(ecc, dim=2)
     if normalize:
         ect = normalize_ect(ect)
@@ -219,9 +211,6 @@ def compute_ect_points(
         The index tensor is assumed to start at 0.
     """
 
-    # ensure that the scale is in the right device
-    scale_tensor = torch.tensor([scale], device=x.device)
-
     if index is not None:
         batch_len = int(index.max() + 1)
     else:
@@ -240,7 +229,7 @@ def compute_ect_points(
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, nh))
+    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
         device=nh.device,
@@ -287,9 +276,6 @@ def compute_ect_edges(
         The index tensor is assumed to start at 0.
     """
 
-    # ensure that the scale is in the right device
-    scale_tensor = torch.tensor([scale], device=x.device)
-
     if index is not None:
         batch_len = int(index.max() + 1)
     else:
@@ -308,7 +294,7 @@ def compute_ect_edges(
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, nh))
+    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
         device=x.device,
@@ -325,7 +311,7 @@ def compute_ect_edges(
     index_simplex = index[edge_index[0]]
 
     # Calculate the ECC of the edges.
-    secc = (-1) * torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, sh))
+    secc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, sh))
 
     # Add the ECC of the simplices to the running total.
     output.index_add_(1, index_simplex, secc)
@@ -374,9 +360,6 @@ def compute_ect_mesh(
         The index tensor is assumed to start at 0.
     """
 
-    # ensure that the scale is in the right device
-    scale_tensor = torch.tensor([scale], device=x.device)
-
     if index is not None:
         batch_len = int(index.max() + 1)
     else:
@@ -391,7 +374,7 @@ def compute_ect_mesh(
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, nh))
+    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
 
     output = torch.zeros(
         size=out_shape,
@@ -413,7 +396,7 @@ def compute_ect_mesh(
     index_simplex = index[edge_index[0]]
 
     # Calculate the ECC of the simplices.
-    edges_ecc = (-1) * torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, eh))
+    edges_ecc = (-1) * torch.nn.functional.sigmoid(scale * torch.sub(lin, eh))
 
     # Add the ECC of the simplices to the running total.
     _ = output.index_add_(1, index_simplex, edges_ecc)
@@ -427,7 +410,7 @@ def compute_ect_mesh(
     index_simplex = index[face_index[0]]
 
     # Calculate the ECC of the simplices.
-    faces_ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, fh))
+    faces_ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, fh))
 
     # Add the ECC of the simplices to the running total.
     _ = output.index_add_(1, index_simplex, faces_ecc)
@@ -455,9 +438,6 @@ def compute_ect_channels(
     channel number for each point and the output is ECT for shape [B,num_channels,num_thetas,resolution]
     """
 
-    # Ensure that the scale is in the right device
-    scale_tensor = torch.tensor([scale], device=x.device)
-
     # Compute maximum channels.
     if max_channels is None:
         max_channels = int(channels.max()) + 1
@@ -483,7 +463,7 @@ def compute_ect_channels(
     # Node heights have shape [num_points, num_directions]
     nh = x @ v
     lin = torch.linspace(-radius, radius, resolution, device=x.device).view(-1, 1, 1)
-    ecc = torch.nn.functional.sigmoid(scale_tensor * torch.sub(lin, nh))
+    ecc = torch.nn.functional.sigmoid(scale * torch.sub(lin, nh))
     output = torch.zeros(
         size=out_shape,
         device=nh.device,
