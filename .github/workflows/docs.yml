@@ -30,7 +30,7 @@ jobs:
       # It is assumed that the notebooks are converted to markdown files with `make notebooks`.
       - name: Build Docs
         run: |
-          uvx mkdocs build
+          uv run mkdocs build
 
       - uses: actions/upload-pages-artifact@v3
         with:
