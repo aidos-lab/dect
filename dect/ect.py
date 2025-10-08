@@ -508,7 +508,7 @@ def compute_ect_channels(
 
 def compute_ect_hypergraph(
     x: Tensor,
-    hyperedges: List[Tensor],
+    hyperedges: list[Tensor],
     v: Tensor,
     radius: float,
     resolution: int,
@@ -594,13 +594,13 @@ def compute_ect_hypergraph(
 
 def compute_ect_hypergraph_channels(
     x: Tensor,
-    hyperedges: List[Tensor],
+    hyperedges: list[Tensor],
     v: Tensor,
     radius: float,
     resolution: int,
     scale: float,
     channels: Tensor,
-    hyperedge_channels: Optional[List[Tensor]] = None,
+    hyperedge_channels: list[Tensor] | None = None,
     index: Tensor | None = None,
     max_channels: int | None = None,
     normalize: bool = False,
