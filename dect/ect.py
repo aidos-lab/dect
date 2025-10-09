@@ -531,41 +531,40 @@ def compute_ect_channels(
 
 
 def compute_ect_hypergraph(
-    x: Tensor,
-    hyperedges: List[Tensor],
-    v: Tensor,
+    x: torch.Tensor,
+    hyperedges: List[torch.Tensor],
+    v: torch.Tensor,
     radius: float,
     resolution: int,
     scale: float,
-    index: Tensor | None = None,
+    index: torch.Tensor | None = None,
     normalize: bool = False,
-) -> Tensor:
+) -> torch.Tensor:
     """
-    ECT for a hypergraph:
-      - Nodes (0-simplices) contribute with +1
-      - A hyperedge with m nodes is a (m-1)-simplex and contributes with (-1)^(m-1)
+    Vectorized ECT for a hypergraph (no Python loop over hyperedges).
 
-    Returns: Tensor of shape [B, T, R]
-      B = number of batches
-      T = number of directions
-      R = resolution
+    Args:
+      x: (N, D) node coordinates
+      hyperedges: list of 1D LongTensors of node indices, one per hyperedge (variable length)
+      v: directions. Accepts:
+         - (D, T) or (T, D) shared across the batch
+         - (B, T, D) or (B, D, T) per-batch directions (B must match the batch ids in `index`)
+      radius: scalar defining threshold range [-radius, radius]
+      resolution: number of thresholds
+      scale: logistic steepness (float)
+      index: (N,) LongTensor with batch ids for each node; if None, single batch is assumed
+      normalize: if True, divide each (B,T,:) trace by its max over thresholds
+
+    Returns:
+      ect: (B, T, R)
     """
-    # Normalize direction shape to (D, T)
-    if v.dim() != 2:
-        raise ValueError("v must be 2D with shape (D, T) or (T, D)")
-    if v.shape[0] != x.shape[1] and v.shape[1] == x.shape[1]:
-        v = v.transpose(0, 1).contiguous()
-    if v.shape[0] != x.shape[1]:
-        raise ValueError(
-            f"v has incompatible shape {tuple(v.shape)} for x with D={x.shape[1]}"
-        )
-
-    # Types/devices
+    # ---- Types/devices ----
     x = x.to(dtype=torch.get_default_dtype())
     device = x.device
+    v = v.to(device=device, dtype=x.dtype)
     scale_t = torch.as_tensor(scale, device=device, dtype=x.dtype)
 
-    # Batch index handling (must be Long for index_add_)
+    # ---- Batch index ----
     if index is None:
         index = torch.zeros((x.size(0),), dtype=torch.long, device=device)
         B = 1
@@ -573,41 +572,93 @@ def compute_ect_hypergraph(
         index = index.to(dtype=torch.long, device=device)
         B = int(index.max().item()) + 1
 
-    T = v.shape[1]
+    N, D = x.shape
+    # ---- Handle direction shapes and compute per-node heights nh: (N, T) ----
+    if v.dim() == 2:
+        # shared directions: (D,T) or (T,D)
+        if v.shape[0] != D and v.shape[1] == D:
+            v = v.transpose(0, 1).contiguous()
+        if v.shape[0] != D:
+            raise ValueError(f"v has incompatible shape {tuple(v.shape)} for x with D={D}")
+        T = v.shape[1]
+        nh = x @ v  # (N, T)
+    elif v.dim() == 3:
+        # per-batch directions: (B,T,D) or (B,D,T)
+        if v.shape[0] != B:
+            raise ValueError(f"v batch dimension {v.shape[0]} must match B={B}")
+        if v.shape[-1] == D:
+            # (B, T, D)
+            T = v.shape[1]
+            Vp = v[index]  # (N, T, D)
+        elif v.shape[1] == D:
+            # (B, D, T) -> (B, T, D)
+            v = v.transpose(1, 2).contiguous()
+            T = v.shape[1]
+            Vp = v[index]
+        else:
+            raise ValueError(f"v has incompatible shape {tuple(v.shape)} for x with D={D}")
+        nh = (x.unsqueeze(1) * Vp).sum(dim=-1)  # (N, T)
+    else:
+        raise ValueError("v must have shape (D,T), (T,D), (B,T,D), or (B,D,T)")
+
     R = int(resolution)
 
-    # Threshold grid and node heights
-    lin = torch.linspace(-radius, radius, R, device=device, dtype=x.dtype).view(R, 1, 1)
-    nh = x @ v  # (N, T)
+    # ---- Threshold grid & node heights ----
+    lin = torch.linspace(-radius, radius, R, device=device, dtype=x.dtype).view(R, 1, 1)  # (R,1,1)
 
-    # Accumulator (R, B, T)
+    # ---- Accumulator: (R, B, T) ----
     out = x.new_zeros((R, B, T))
 
-    # 0-simplices (nodes): +1
-    ecc_nodes = torch.sigmoid(scale_t * (lin - nh))  # (R, N, T)
-    out.index_add_(1, index, ecc_nodes)
+    # ---- 0-simplices (nodes): +1 ----
+    ecc_nodes = torch.sigmoid(scale_t * (lin - nh.view(1, N, T)))  # (R, N, T)
+    out.index_add_(1, index, ecc_nodes)  # sum nodes into their batches
 
-    # Hyperedges: treat each as a simplex of dimension (m-1) with sign (-1)**(m-1)
-    for he in hyperedges:
-        if he.numel() == 0:
-            continue
-        he = he.to(device=device, dtype=torch.long)
+    # ---- Hyperedges (vectorized) ----
+    # Filter out empty hyperedges up front to avoid edge cases
+    if len(hyperedges) > 0:
+        non_empty = [he for he in hyperedges if he.numel() > 0]
+    else:
+        non_empty = []
 
-        # Max-height across constituent nodes for each direction
-        he_height, _ = nh[he].max(dim=0)  # (T,)
-        # Batch id: take the first node’s batch
-        b = index[he[0]]  # scalar Long tensor
+    if len(non_empty) > 0:
+        # Pack all node indices of all hyperedges into one vector
+        he_lens = torch.tensor([he.numel() for he in non_empty], device=device, dtype=torch.long)  # (H,)
+        H = he_lens.numel()
+        he_nodes = torch.cat([he.to(device=device, dtype=torch.long) for he in non_empty], dim=0)  # (M,)
 
-        m = int(he.numel())
-        sign = -1 if (m % 2 == 0) else 1  # (-1)**(m-1)
+        # For each entry in he_nodes, which hyperedge does it belong to?
+        he_id = torch.repeat_interleave(torch.arange(H, device=device, dtype=torch.long), he_lens)  # (M,)
 
-        ecc_he = sign * torch.sigmoid(
-            scale_t * (lin - he_height.view(1, 1, -1))
-        )  # (R, 1, T)
-        out.index_add_(1, b.view(1), ecc_he)
+        # Per-hyperedge batch id: convention = batch of the first node of that hyperedge
+        first_nodes = torch.stack([he[0] for he in non_empty]).to(device=device, dtype=torch.long)  # (H,)
+        he_batch = index[first_nodes]  # (H,)
 
-    # (R, B, T) -> (B, T, R)
-    ect = out.movedim(0, 2)
+        # Signs: (-1)^(m-1); m even -> -1, m odd -> +1
+        he_sign = torch.where(he_lens.remainder(2).eq(0), -torch.ones_like(he_lens), torch.ones_like(he_lens))
+        he_sign = he_sign.view(H, 1).to(dtype=x.dtype)  # (H,1)
+
+        # Heights of nodes participating in hyperedges
+        nh_cat = nh[he_nodes]  # (M, T)
+
+        # Reduce by hyperedge: max over nodes for each hyperedge and direction
+        # Use scatter_reduce_ (PyTorch ≥ 2.0)
+        he_height = torch.full((H, T), -torch.inf, device=device, dtype=x.dtype)
+        he_height.scatter_reduce_(
+            dim=0,
+            index=he_id.view(-1, 1).expand(-1, T),
+            src=nh_cat,
+            reduce='amax',
+            include_self=True,
+        )  # (H, T)
+
+        # Eccentricities for all hyperedges at once: (R, H, T)
+        ecc_he = he_sign.view(1, H, 1) * torch.sigmoid(scale_t * (lin - he_height.view(1, H, T)))
+
+        # Accumulate hyperedges into batches (index_add over batch dimension)
+        out.index_add_(1, he_batch, ecc_he)
+
+    # ---- (R, B, T) -> (B, T, R) ----
+    ect = out.movedim(0, 2)  # (B, T, R)
 
     if normalize:
         denom = torch.amax(ect, dim=-1, keepdim=True).clamp_min(1e-12)
@@ -701,36 +752,64 @@ def compute_ect_hypergraph_channels(
     out = x.new_zeros((R, B * max_channels, T))  # (R, B*C, T)
     out.index_add_(1, idx_bc, ecc_nodes)
 
-    # HYPEREDGE contributions
-    # Iterate per hyperedge; each is a 1D tensor of node indices
-    for i, he in enumerate(hyperedges):
-        he = he.to(device=device, dtype=torch.long)
-        m = int(he.numel())
-        if m == 0:
-            continue
-        # Max-height across member nodes per direction
-        he_h, _ = nh[he].max(dim=0)  # (T,)
-        # Batch from first node
-        b = index[he[0]]  # scalar Long
-        # Channel: provided or inherit from first node
-        if hyperedge_channels is not None and i < len(hyperedge_channels):
-            ch_i = hyperedge_channels[i]
-            if isinstance(ch_i, torch.Tensor):
-                ch = ch_i.to(device=device, dtype=torch.long).view(-1)[0]
+    # HYPEREDGE contributions (vectorized)
+    Hn = len(hyperedges)
+    if Hn > 0:
+        lengths = torch.tensor([int(h.numel()) for h in hyperedges],
+                               device=device, dtype=torch.long)
+        valid_mask = lengths > 0
+        if valid_mask.any():
+            # Keep only non-empty hyperedges
+            he_list = [hyperedges[i].to(device=device, dtype=torch.long).view(-1)
+                       for i, m in enumerate(valid_mask.tolist()) if m]
+            lengths = lengths[valid_mask]
+            Hn = int(lengths.numel())
+
+            # Concatenate all member indices and build hyperedge ids per member
+            idx_all = torch.cat(he_list, dim=0)                         # (M,)
+            he_id  = torch.repeat_interleave(torch.arange(Hn, device=device, dtype=torch.long), lengths)  # (M,)
+
+            # Max-height per hyperedge across members for each direction → (Hn, T)
+            nh_sel = nh[idx_all]                                        # (M, T)
+            he_h = nh_sel.new_full((Hn, nh_sel.size(1)), float('-inf')) # (Hn, T)
+            he_h = he_h.scatter_reduce(0, he_id.view(-1,1).expand_as(nh_sel),
+                                       nh_sel, reduce='amax', include_self=True)
+            he_h = torch.where(torch.isneginf(he_h), torch.zeros_like(he_h), he_h)
+
+            # Batch per hyperedge from first member; compute first indices quickly
+            first_idx = torch.cumsum(torch.nn.functional.pad(lengths, (1,0)), dim=0)[:-1]
+            first_nodes = idx_all[first_idx]                             # (Hn,)
+            b = index[first_nodes]                                       # (Hn,)
+
+            # Channel per hyperedge (provided list or inherit from first node)
+            if hyperedge_channels is not None and len(hyperedge_channels) > 0:
+                ch_vals = []
+                j = 0
+                for i, m in enumerate(valid_mask.tolist()):
+                    if not m:
+                        continue
+                    xch = hyperedge_channels[i]
+                    if isinstance(xch, torch.Tensor):
+                        ch_vals.append(int(xch.view(-1)[0].item()))
+                    else:
+                        ch_vals.append(int(xch))
+                    j += 1
+                ch = torch.as_tensor(ch_vals, device=device, dtype=torch.long)
             else:
-                ch = torch.as_tensor(int(ch_i), device=device, dtype=torch.long)
-        else:
-            ch = channels[he[0]]  # scalar Long
+                ch = channels[first_nodes]
 
-        # Alternating sign: (-1)**(m-1)
-        sign = -1 if (m % 2 == 0) else 1
-        ecc_he = sign * torch.sigmoid(
-            scale_t * (lin - he_h.view(1, 1, -1))
-        )  # (R, 1, T)
+            # Clamp/Wrap channels to [0, max_channels)
+            ch = torch.remainder(ch, max_channels)
+            idx_bc_he = (b * max_channels + ch).view(-1)                 # (Hn,)
 
-        # Flattened (batch, channel) index
-        idx = (b * max_channels + ch).view(1)  # (1,)
-        out.index_add_(1, idx, ecc_he)
+            # Alternating signs by simplex dim (m-1): (-1)**(m-1) → even m ⇒ -1 else +1
+            signs = torch.where((lengths % 2) == 0, -1.0, 1.0).to(x.dtype).view(Hn, 1)
+
+            # ECT contribution per hyperedge: (R, Hn, T)
+            ecc_he = signs * torch.sigmoid(scale_t * (lin - he_h.unsqueeze(0)))
+
+            # Accumulate into (B·C) buckets
+            out.index_add_(1, idx_bc_he, ecc_he)
 
     # Reshape to (B, T, R, C)
     ect = out.view(R, B, max_channels, T).permute(1, 3, 0, 2).contiguous()
