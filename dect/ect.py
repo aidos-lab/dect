@@ -614,48 +614,52 @@ def compute_ect_hypergraph(
     out.index_add_(1, index, ecc_nodes)  # sum nodes into their batches
 
     # ---- Hyperedges (vectorized) ----
-    # Filter out empty hyperedges up front to avoid edge cases
-    if len(hyperedges) > 0:
-        non_empty = [he for he in hyperedges if he.numel() > 0]
-    else:
-        non_empty = []
+    # Assume at least one hyperedge and that hyperedges are non-empty (compile-friendly, cudagraph-capable)
+    assert len(hyperedges) > 0, "compute_ect_hypergraph expected at least one hyperedge"
 
-    if len(non_empty) > 0:
-        # Pack all node indices of all hyperedges into one vector
-        he_lens = torch.tensor([he.numel() for he in non_empty], device=device, dtype=torch.long)  # (H,)
-        H = he_lens.numel()
-        he_nodes = torch.cat([he.to(device=device, dtype=torch.long) for he in non_empty], dim=0)  # (M,)
+    # Move all hyperedge tensors to the correct device/dtype once, outside the core math
+    he_list = [he.to(device=device, dtype=torch.long, non_blocking=True).view(-1) for he in hyperedges]
 
-        # For each entry in he_nodes, which hyperedge does it belong to?
-        he_id = torch.repeat_interleave(torch.arange(H, device=device, dtype=torch.long), he_lens)  # (M,)
+    # Optional safety: ensure no empty hyperedges (keeps cudagraphs happy and avoids corner cases)
+    if __debug__:
+        for _he in he_list:
+            assert _he.numel() > 0, "Empty hyperedge encountered; provide only non-empty hyperedges"
 
-        # Per-hyperedge batch id: convention = batch of the first node of that hyperedge
-        first_nodes = torch.stack([he[0] for he in non_empty]).to(device=device, dtype=torch.long)  # (H,)
-        he_batch = index[first_nodes]  # (H,)
+    # Pack lengths and concatenated node indices
+    he_lens = torch.tensor([h.numel() for h in he_list], device=device, dtype=torch.long)  # (H,)
+    H = he_lens.numel()
+    he_nodes = torch.cat(he_list, dim=0)  # (M,)
 
-        # Signs: (-1)^(m-1); m even -> -1, m odd -> +1
-        he_sign = torch.where(he_lens.remainder(2).eq(0), -torch.ones_like(he_lens), torch.ones_like(he_lens))
-        he_sign = he_sign.view(H, 1).to(dtype=x.dtype)  # (H,1)
+    # For each entry in he_nodes, which hyperedge does it belong to?
+    he_id = torch.repeat_interleave(torch.arange(H, device=device, dtype=torch.long), he_lens)  # (M,)
 
-        # Heights of nodes participating in hyperedges
-        nh_cat = nh[he_nodes]  # (M, T)
+    # Per-hyperedge batch id: convention = batch of the first node of that hyperedge
+    first_idx = torch.cumsum(torch.nn.functional.pad(he_lens, (1, 0)), dim=0)[:-1]
+    first_nodes = he_nodes[first_idx]  # (H,)
+    he_batch = index[first_nodes]      # (H,)
 
-        # Reduce by hyperedge: max over nodes for each hyperedge and direction
-        # Use scatter_reduce_ (PyTorch ≥ 2.0)
-        he_height = torch.full((H, T), -torch.inf, device=device, dtype=x.dtype)
-        he_height.scatter_reduce_(
-            dim=0,
-            index=he_id.view(-1, 1).expand(-1, T),
-            src=nh_cat,
-            reduce='amax',
-            include_self=True,
-        )  # (H, T)
+    # Signs: (-1)^(m-1); m even -> -1, m odd -> +1
+    he_sign = torch.where(he_lens.remainder(2).eq(0), -torch.ones_like(he_lens), torch.ones_like(he_lens))
+    he_sign = he_sign.view(H, 1).to(dtype=x.dtype)  # (H,1)
 
-        # Eccentricities for all hyperedges at once: (R, H, T)
-        ecc_he = he_sign.view(1, H, 1) * torch.sigmoid(scale_t * (lin - he_height.view(1, H, T)))
+    # Heights of nodes participating in hyperedges
+    nh_cat = nh[he_nodes]  # (M, T)
 
-        # Accumulate hyperedges into batches (index_add over batch dimension)
-        out.index_add_(1, he_batch, ecc_he)
+    # Reduce by hyperedge: max over nodes for each hyperedge and direction
+    he_height = torch.full((H, T), -torch.inf, device=device, dtype=x.dtype)
+    he_height.scatter_reduce_(
+        dim=0,
+        index=he_id.view(-1, 1).expand(-1, T),
+        src=nh_cat,
+        reduce='amax',
+        include_self=True,
+    )  # (H, T)
+
+    # Eccentricities for all hyperedges at once: (R, H, T)
+    ecc_he = he_sign.view(1, H, 1) * torch.sigmoid(scale_t * (lin - he_height.view(1, H, T)))
+
+    # Accumulate hyperedges into batches (index_add over batch dimension)
+    out.index_add_(1, he_batch, ecc_he)
 
     # ---- (R, B, T) -> (B, T, R) ----
     ect = out.movedim(0, 2)  # (B, T, R)
