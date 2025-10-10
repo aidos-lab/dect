@@ -481,7 +481,7 @@ def compute_ect_channels(
         index = torch.zeros((x.size(0),), dtype=torch.long, device=x.device)
     else:
         index = index.to(dtype=torch.long, device=x.device)
-    B = int(index.max().item()) + 1
+    B = torch.bincount(index.view(-1), minlength=1).size(0)
 
     # Channels and max_channels
     channels = channels.to(dtype=torch.long, device=x.device)
@@ -568,12 +568,11 @@ def compute_ect_hypergraph(
     scale_t = torch.as_tensor(scale, device=device, dtype=x.dtype)
 
     # ---- Batch index ----
-    if index is None:
+    if index is None or index.numel() == 0:
         index = torch.zeros((x.size(0),), dtype=torch.long, device=device)
-        B = 1
     else:
         index = index.to(dtype=torch.long, device=device)
-        B = int(index.max().item()) + 1
+    B = torch.bincount(index.view(-1), minlength=1).size(0)
 
     N, D = x.shape
     # ---- Directions & node heights ----
@@ -679,7 +678,7 @@ def compute_ect_hypergraph_channels(
         index = torch.zeros((x.size(0),), dtype=torch.long, device=device)
     else:
         index = index.to(dtype=torch.long, device=device)
-    B = int(index.max().item()) + 1
+    B = torch.bincount(index.view(-1), minlength=1).size(0)
 
     # Channels
     channels = channels.to(dtype=torch.long, device=device)
