@@ -5,9 +5,12 @@ Functions to initialize directions in 2, 3 and $n$ dimensions.
 import itertools
 
 import torch
+from torch import Tensor
 
 
-def generate_uniform_directions(num_thetas: int, d: int, seed: int, device: str):
+def generate_uniform_directions(
+    num_thetas: int, d: int, seed: int, device: str
+) -> Tensor:
     """
     Generate randomly sampled directions from a sphere in d dimensions.
 
@@ -15,33 +18,31 @@ def generate_uniform_directions(num_thetas: int, d: int, seed: int, device: str)
     yield a randomly sampled set of points on the unit spere. Please
     note that the generated tensor has shape [d, num_thetas].
 
-    Parameters
-    ----------
-    num_thetas: int
-        The number of directions to generate.
-    d: int
-        The dimension of the unit sphere. Default is 3 (hence R^3)
+    Args:
+        num_thetas:
+            The number of directions to generate.
+        d:
+            The dimension of the unit sphere. Default is 3 (hence R^3)
+    Returns:
+        A set of directions.
     """
     g = torch.Generator(device=device).manual_seed(seed)
     v = torch.randn(size=(d, num_thetas), device=device, generator=g)
-    v /= v.pow(2).sum(axis=0).sqrt()
+    v /= v.pow(2).sum(dim=0).sqrt()
     return v
 
 
-def generate_2d_directions(num_thetas: int = 64):
+def generate_2d_directions(num_thetas: int = 64) -> Tensor:
     """
     Provides a structured set of directions in two dimensions. First the
     interval [0,2*pi] is devided into a regular grid and the corresponding
     angles on the unit circle calculated.
 
-    Parameters
-    ----------
-    num_thetas: int
-        The number of directions to generate.
+    Args:
+        num_thetas:
+            The number of directions to generate.
 
-    Returns
-    ----------
-    v: Tensor
+    Returns:
         Tensor of shape [2,num_thetas] containing the directions where each
         column is one direction in 2D.
         The directions start at $theta=0$ and runs to $theta = 2 * pi$.
@@ -57,7 +58,7 @@ def generate_2d_directions(num_thetas: int = 64):
     return v
 
 
-def generate_multiview_directions(num_thetas: int, d: int):
+def generate_multiview_directions(num_thetas: int, d: int) -> Tensor:
     """
     Generates multiple sets of structured directions in n dimensions.
 
@@ -71,12 +72,11 @@ def generate_multiview_directions(num_thetas: int, d: int):
     would obtain a 3 channel ect with direction sampled along the xy, xz and yz
     planes in three dimensions.
 
-    Parameters
-    ----------
-    num_thetas: int
-        The number of directions to generate.
-    d: int
-        The dimension of the unit sphere. Default is 3 (hence R^3)
+    Args:
+        num_thetas:
+            The number of directions to generate.
+        d:
+            The dimension of the unit sphere. Default is 3 (hence R^3)
     """
 
     # We obtain n choose 2 channels.
@@ -111,7 +111,9 @@ def generate_multiview_directions(num_thetas: int, d: int):
     return torch.hstack(multiview_dirs)
 
 
-def generate_spherical_grid_directions(num_thetas: int, num_phis: int, d: int = 3):
+def generate_spherical_grid_directions(
+    num_thetas: int, num_phis: int, d: int = 3
+) -> Tensor:
     """
     Generates a smooth spherical grid of directions on the unit sphere in 3D using
     latitude–longitude (θ, φ) style sampling.
@@ -119,18 +121,16 @@ def generate_spherical_grid_directions(num_thetas: int, num_phis: int, d: int = 
     The directions are parameterized by θ (polar angle, [0, π]) and φ (azimuthal angle, [0, 2π)),
     and returned as a tensor of shape [3, num_thetas * num_phis], with each column a unit vector.
 
-    Parameters
-    ----------
-    num_thetas: int
-        Number of θ samples (from 0 to π, inclusive).
-    num_phis: int
-        Number of φ samples (from 0 to 2π, exclusive).
-    d: int
-        Must be 3, as spherical coordinates are for 3D.
+    Args:
+        num_thetas:
+            Number of θ samples (from 0 to π, inclusive).
+        num_phis:
+            Number of φ samples (from 0 to 2π, exclusive).
+        d:
+            Must be 3, as spherical coordinates are for 3D.
 
-    Returns
-    -------
-    Tensor of shape [3, num_thetas * num_phis] containing unit vectors on the sphere.
+    Returns:
+        Tensor of shape [3, num_thetas * num_phis] containing unit vectors on the sphere.
     """
     assert d == 3, "Spherical coordinates are only defined for d=3."
 
