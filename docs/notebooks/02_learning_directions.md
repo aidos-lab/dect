@@ -25,6 +25,10 @@ from dect.nn import ECTLayer, ECTConfig
 DEVICE = "cuda:0"
 ```
 
+    /home/ernst/projects/dect/.venv/lib/python3.13/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+      from .autonotebook import tqdm as notebook_tqdm
+
+
 The direction vectors are always in the format `[ndims,num_thetas]` where
 `ndims` is the dimension of the ambient space and `num_thetas` is the number of
 directions used. Optionally if one is interested in multiple sets of directions 
@@ -118,7 +122,7 @@ plt.scatter(fixedv[:,0],fixedv[:,1])
 
 
 
-    <matplotlib.collections.PathCollection at 0x7e988a3a6350>
+    <matplotlib.collections.PathCollection at 0x7ff79b0c23c0>
 
 
 
@@ -137,7 +141,7 @@ plt.scatter(learnablev[:,0],learnablev[:,1])
 
 
 
-    <matplotlib.collections.PathCollection at 0x7e9888240610>
+    <matplotlib.collections.PathCollection at 0x7ff798f1bed0>
 
 
 
@@ -171,7 +175,7 @@ ax.imshow(ect.squeeze().detach().cpu().numpy())
 
 
 
-    <matplotlib.image.AxesImage at 0x7e9888103c40>
+    <matplotlib.image.AxesImage at 0x7ff798fd0e10>
 
 
 
@@ -205,6 +209,8 @@ for epoch in range(500):
 
     Epoch: 0, Loss: 0.24
     Epoch: 50, Loss: 0.06
+
+
     Epoch: 100, Loss: 0.01
     Epoch: 150, Loss: 0.00
     Epoch: 200, Loss: 0.00
@@ -212,8 +218,6 @@ for epoch in range(500):
     Epoch: 300, Loss: 0.00
     Epoch: 350, Loss: 0.00
     Epoch: 400, Loss: 0.00
-
-
     Epoch: 450, Loss: 0.00
 
 
@@ -235,7 +239,7 @@ ax.imshow(ect.squeeze().detach().cpu().numpy())
 
 
 
-    <matplotlib.image.AxesImage at 0x7e98881f9180>
+    <matplotlib.image.AxesImage at 0x7ff798e9f9d0>
 
 
 
