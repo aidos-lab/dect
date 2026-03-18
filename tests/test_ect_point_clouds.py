@@ -40,7 +40,12 @@ def test_compute_ect_point_cloud(device):
     batch_size = 8
     num_thetas = 100
     seed = 0
-    x = torch.rand(size=(batch_size, num_pts, ambient_dimension), device=device)
+    g = torch.Generator(device=device).manual_seed(seed)
+    x = torch.rand(
+        size=(batch_size, num_pts, ambient_dimension),
+        generator=g,
+        device=device,
+    )
     v = generate_uniform_directions(
         num_thetas=num_thetas, d=ambient_dimension, device=device, seed=seed
     )

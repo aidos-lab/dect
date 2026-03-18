@@ -28,7 +28,8 @@ def test_compute_ect_edges_noindex(device):
     v = generate_uniform_directions(
         num_thetas=17, seed=seed, device=device, d=ambient_dimension
     ).to(device)
-    x = torch.rand(size=(num_points, ambient_dimension), device=device)
+    g = torch.Generator(device=device).manual_seed(seed)
+    x = torch.rand(size=(num_points, ambient_dimension), generator=g, device=device)
     edge_index = torch.tensor([[0, 1, 2, 3, 4, 5], [1, 2, 3, 4, 5, 6]], device=device)
     ect = compute_ect_edges(
         x, edge_index=edge_index, v=v, radius=1, resolution=13, scale=10

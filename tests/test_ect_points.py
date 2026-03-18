@@ -29,9 +29,13 @@ def test_compute_ect_case_points_noindex_cpu(device):
     ambient_dimension = 5
     num_points = 10
     v = generate_uniform_directions(
-        num_thetas=17, seed=seed, device=device, d=ambient_dimension
+        num_thetas=17,
+        seed=seed,
+        device=device,
+        d=ambient_dimension,
     ).to(device)
-    x = torch.rand(size=(num_points, ambient_dimension), device=device)
+    g = torch.Generator(device=device).manual_seed(seed)
+    x = torch.rand(size=(num_points, ambient_dimension), generator=g, device=device)
     ect = compute_ect_points(x, v=v, radius=1, resolution=13, scale=10)
 
     assert ect.device.type == device
